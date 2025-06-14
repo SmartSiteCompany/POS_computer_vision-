@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Identificación Facial</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="container">
+  <h1>Identificación de Rostros</h1>
+
+  <div class="video-wrapper">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay"></canvas>
+  </div>
+
+  <div id="results"></div>
+
+  <button onclick="stopIdentification()">Detener</button>
+</div>
+
+  <script src="identify.js"></script>
+  
+</body>
+</html>
