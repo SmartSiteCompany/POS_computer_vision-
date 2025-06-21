@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro Facial</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Registrar Rostro</h1>
+    <video id="video" autoplay muted></video>
+    <canvas id="overlay"></canvas>
+    <div class="buttons">
+      <button onclick="register()">Registrar</button>
+      <a href="index.html" class="btn">Volver</a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+
+    <div class="container">
+    <h1>Registrar Rostros desde Imagen</h1>
+    <form id="register-form" method="POST" enctype="multipart/form-data">
+      <input type="file" name="image" accept="image/*" required />
+      <button type="submit">Registrar</button>
+    </form>
+    <p id="register-result"></p>
+    <img id="register-preview" style="display: none; max-width: 400px;" />
+    <ul id="register-list" style="margin-top: 20px;"></ul>
+    <a href="index.html" class="btn">Volver</a>
+  </div>
+  <script src="register.js"></script>
+
+</body>
+</html>
