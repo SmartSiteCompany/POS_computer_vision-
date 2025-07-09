@@ -4,6 +4,7 @@ const routes = require("./routes");
 const path = require("path");
 const db = require('./models/db');
 
+app.use(express.static("public"));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.static(path.join(__dirname, "public"))); // Servir HTML, JS, etc.
 app.use(express.static(path.join(__dirname, "public")));

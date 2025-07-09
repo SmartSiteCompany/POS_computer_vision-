@@ -355,4 +355,62 @@ router.post("/register-image", upload.single("image"), async (req, res) => {
   }
 });
 
+router.get("/users", (req, res) => {
+  db.all("SELECT id, timestamp FROM users", [], (err, rows) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Error al obtener registros" });
+    }
+    res.json({ success: true, users: rows });
+  });
+});
+
+router.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+  db.get("SELECT id, timestamp FROM users WHERE id = ?", [id], (err, row) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Error al obtener registro" });
+    }
+    if (!row) {
+      return res.status(404).json({ error: "Registro no encontrado" });
+    }
+    res.json({ success: true, user: row });
+  });
+});
+
+router.delete("/users/:id", (req, res) => {
+  const { id } = req.params;
+  db.run("DELETE FROM users WHERE id = ?", [id], function (err) {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Error al eliminar registro" });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ error: "Registro no encontrado" });
+    }
+    res.json({ success: true, message: "Registro eliminado" });
+  });
+});
+
+router.put("/users/:id", (req, res) => {
+  const { id } = req.params;
+  const { timestamp } = req.body;
+
+  db.run(
+    "UPDATE users SET timestamp = ? WHERE id = ?",
+    [timestamp, id],
+    function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Error al actualizar registro" });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ error: "Registro no encontrado" });
+      }
+      res.json({ success: true, message: "Registro actualizado" });
+    }
+  );
+});
+
 module.exports = router;
