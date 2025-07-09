@@ -7,6 +7,8 @@ const db = require("./models/db");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" }); // carpeta temporal
 const canvas = require("canvas");
+const mongoose = require ("mongoose");
+const User = require ('./models/User.js');
 const { createCanvas, Image, loadImage } = require ("canvas");
 
 faceapi.env.monkeyPatch({ Canvas: canvas.Canvas, Image, ImageData: canvas.ImageData});
@@ -26,7 +28,7 @@ async function loadModels() {
 }
 
 // Función para cargar encodings desde la base de datos
-function loadEncodingsFromDB() {
+/*function loadEncodingsFromDB() {
   return new Promise((resolve, reject) => {
     db.all('SELECT id, encoding FROM users', [], (err, rows) => {
       if (err) return reject(err);
@@ -37,10 +39,10 @@ function loadEncodingsFromDB() {
       resolve(encodings);
     });
   });
-}
+}*/
 
 // Función para guardar un nuevo encoding 
-function saveEncodingToDB(descriptor) {
+/*function saveEncodingToDB(descriptor) {
   return new Promise((resolve, reject) => {
     const descriptorStr = JSON.stringify(Array.from(descriptor));
     db.run(
@@ -52,7 +54,26 @@ function saveEncodingToDB(descriptor) {
       }
     );
   });
+}*/
+
+// Función para cargar un encoding desde mongodb
+async function loadEncodingsFromMongodb() {
+  const users = await User.find({});
+  return users.map((user) => ({
+    id: user._id.toString(),
+    descriptor: user.encoding,
+  }));
 }
+
+
+// Función para guardar un encoding desde mongodb
+async function saveEncodingToMongodb(descriptor) {
+  const newUser = new User({ encoding: Array.from(descriptor) });
+  const saved = await newUser.save();
+  return saved._id.toString();
+}
+
+
 
 // Convertir base64 a tensor
 async function getDescriptorFromBase64(base64) {
@@ -243,7 +264,7 @@ router.post("/upload-image", upload.single("image"), async (req, res) => {
       return res.json({ success: true, message: "No se detectaron rostros." });
     }
 
-    const encodings = await loadEncodingsFromDB();
+    const encodings = await loadEncodingsFromMongodb();
     const results = [];
 
     for (let i = 0; i < detections.length; i++) {
@@ -305,7 +326,7 @@ router.post("/register-image", upload.single("image"), async (req, res) => {
       return res.json({ success: true, message: "No se detectaron rostros." });
     }
 
-    const existingEncodings = await loadEncodingsFromDB();
+    const existingEncodings = await loadEncodingsFromMongodb();
 
       for (let i = 0; i < detections.length; i++) {
         const det = detections[i];
@@ -321,39 +342,45 @@ router.post("/register-image", upload.single("image"), async (req, res) => {
 
       let newId = null;
 
-        if (isNew) {
-          const descriptorArray = Array.from(det.descriptor);
-          newId = await new Promise((resolve, reject) => {
-            db.run(
-              "INSERT INTO users (encoding) VALUES (?)",
-              [JSON.stringify(descriptorArray)],
-              function (err) {
-                if (err) reject(err);
-                else resolve(this.lastID);
-              }
-            );
-          });
+    if (isNew) {
+            const descriptorArray = Array.from(det.descriptor);
+            const newUser = new User({ encoding: descriptorArray });
+            const saved = await newUser.save();
+            newId = saved._id.toString();
 
-          registeredFaces.push({ id: newId, color });
+            registeredFaces.push({ id: newId, color });
+
+            // guardar imagen recortada del rostro
+            const faceCanvas = createCanvas(width, height);
+            const faceCtx = faceCanvas.getContext("2d");
+            faceCtx.drawImage(c, x, y, width, height, 0, 0, width, height);
+            const facePath = path.join(__dirname, "dataset", `user_${newId}.jpg`);
+            fs.writeFileSync(facePath, faceCanvas.toBuffer("image/jpeg"));
+          }
+
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x, y, width, height);
         }
 
-        const { x, y, width, height } = det.detection.box;
-        //const color = colorList[i % colorList.length];
+        const outBase64 = c.toDataURL("image/jpeg");
+        fs.unlinkSync(imagePath); // eliminar imagen temporal
 
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, width, height);
+        res.json({
+          success: true,
+          processedImage: outBase64,
+          registered: registeredFaces,
+        });
+      } catch (err) {
+        console.error("Error en /register-image:", err);
+        res
+          .status(500)
+          .json({ success: false, message: "Error registrando imagen." });
       }
 
-    const outBase64 = c.toDataURL("image/jpeg");
-    fs.unlinkSync(imagePath); // eliminar imagen temporal
-
-    res.json({ success: true, processedImage: outBase64, registered: registeredFaces});
-  } catch (err) {
-    console.error("Error en /register-image:", err);
-    res.status(500).json({ success: false, message: "Error registrando imagen." });
-  }
 });
+
+
 
 router.get("/users", (req, res) => {
   db.all("SELECT id, timestamp FROM users", [], (err, rows) => {
@@ -364,6 +391,8 @@ router.get("/users", (req, res) => {
     res.json({ success: true, users: rows });
   });
 });
+
+
 
 router.get("/users/:id", (req, res) => {
   const { id } = req.params;
@@ -379,6 +408,8 @@ router.get("/users/:id", (req, res) => {
   });
 });
 
+
+
 router.delete("/users/:id", (req, res) => {
   const { id } = req.params;
   db.run("DELETE FROM users WHERE id = ?", [id], function (err) {
@@ -392,6 +423,8 @@ router.delete("/users/:id", (req, res) => {
     res.json({ success: true, message: "Registro eliminado" });
   });
 });
+
+
 
 router.put("/users/:id", (req, res) => {
   const { id } = req.params;
@@ -412,5 +445,6 @@ router.put("/users/:id", (req, res) => {
     }
   );
 });
+
 
 module.exports = router;
