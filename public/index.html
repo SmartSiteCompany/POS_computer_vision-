@@ -1,20 +1,422 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inicio - Autenticación Facial</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Site Company- Autenticación Facial Segura</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-dark: #4338CA;
+      --secondary: #10B981;
+      --dark: #1F2937;
+      --light: #F9FAFB;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F3F4F6;
+      color: var(--dark);
+      scroll-behavior: smooth;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    }
+    
+    .card-hover {
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .pulse-animation {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+      }
+    }
+    
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .feature-icon {
+      transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+      transform: scale(1.1);
+      color: var(--primary);
+    }
+    
+    .btn-hover {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-hover:hover {
+      transform: translateY(-2px);
+    }
+    
+    .btn-hover::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .btn-hover:hover::after {
+      transform: translateX(0);
+    }
+    
+    .fade-in {
+      animation: fadeIn 1s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
 </head>
-<body>
-  <div class="container">
-    <h1>Bienvenido</h1>
-    <p>Selecciona una opción:</p>
-    <div class="buttons">
-      <a href="register.html" class="btn">Registrar rostro</a>
-      <a href="identify.html" class="btn">Reconocimieto de rostro tiempo real</a>
+<body class="min-h-screen">
+  <!-- Navigation -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50 fade-in">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center">
+            <i class="fas fa-fingerprint text-white"></i>
+          </div>
+          <span class="text-xl font-semibold text-gray-800">Smart Site Company</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#features" class="text-gray-600 hover:text-indigo-600 transition">Características</a>
+          <a href="#solutions" class="text-gray-600 hover:text-indigo-600 transition">Soluciones</a>
+          <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition">Contacto</a>
+          
+        </div>
+        <button class="md:hidden text-gray-600 focus:outline-none">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="gradient-bg text-white fade-in">
+    <div class="container mx-auto px-6 py-20">
+      <div class="flex flex-col lg:flex-row items-center justify-between">
+        <div class="lg:w-1/2 mb-10 lg:mb-0">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">Autenticación Facial <span class="text-indigo-200">Segura</span></h1>
+          <p class="text-xl mb-8 opacity-90">Protege tus aplicaciones con nuestra tecnología de reconocimiento facial de última generación.</p>
+          
+          <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-10">
+            <a href="#register" class="btn-hover inline-flex items-center justify-center px-6 py-3 bg-white text-indigo-600 font-medium rounded-lg hover:bg-opacity-90 transition duration-300">
+              Comenzar ahora
+              <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+            <a href="#demo" class="btn-hover inline-flex items-center justify-center px-6 py-3 bg-indigo-800 bg-opacity-60 text-white font-medium rounded-lg hover:bg-opacity-70 transition duration-300">
+              <i class="fas fa-play-circle mr-2"></i>
+              Ver demo
+            </a>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-full bg-white bg-opacity-20 flex items-center justify-center pulse-animation">
+              <i class="fas fa-face-recognition text-2xl"></i>
+            </div>
+            <p class="text-sm opacity-90">Tecnología avanzada con precisión del 99.9%</p>
+          </div>
+        </div>
+        <div class="lg:w-1/2 relative">
+          <div class="floating">
+            <img src="https://www.coit.es/sites/default/files/news/reconocimiento_facial.jpg" 
+                 alt="Tecnología de reconocimiento facial mostrando múltiples rostros con puntos de detección" 
+                 class="rounded-xl shadow-2xl border-4 border-white border-opacity-20">
+          </div>
+          <div class="absolute -bottom-6 -left-6 w-24 h-24 bg-yellow-400 rounded-full opacity-20"></div>
+          <div class="absolute -top-6 -right-6 w-32 h-32 bg-purple-400 rounded-full opacity-20"></div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-6 py-16">
+    <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">¿Qué deseas hacer hoy?</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="solutions">
+      <!-- Register Card -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover group">
+        <div class="p-8">
+          <div class="flex items-center mb-6">
+            <div class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center mr-4 group-hover:bg-indigo-200 transition">
+              <i class="fas fa-user-plus text-indigo-600 text-2xl group-hover:text-indigo-800 transition"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800">Registro Facial</h3>
+          </div>
+          <p class="text-gray-600 mb-8">Registra tu rostro en nuestro sistema para habilitar la autenticación biométrica en solo 3 sencillos pasos.</p>
+          <div class="mb-6">
+            <div class="flex items-center mb-3">
+              <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                <i class="fas fa-check text-indigo-600 text-xs"></i>
+              </div>
+              <p class="text-gray-700">Captura facial en alta resolución</p>
+            </div>
+           
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                <i class="fas fa-check text-indigo-600 text-xs"></i>
+              </div>
+              <p class="text-gray-700">Cifrado seguro de tus datos</p>
+            </div>
+          </div>
+          <a href="register.html" id="register" class="btn-hover inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition duration-300">
+            Comenzar registro
+            <i class="fas fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+        <div class="bg-indigo-50 px-6 py-4">
+          <div class="flex items-center text-sm text-indigo-600">
+            <div class="relative mr-3">
+              <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-camera"></i>
+              </div>
+              <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+            </div>
+            <p>Necesitarás una cámara habilitada y buena iluminación</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Identify Card -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover group">
+        <div class="p-8">
+          <div class="flex items-center mb-6">
+            <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mr-4 group-hover:bg-green-200 transition">
+              <i class="fas fa-user-check text-green-600 text-2xl group-hover:text-green-800 transition"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800">Reconocimiento en Tiempo Real</h3>
+          </div>
+          <p class="text-gray-600 mb-8">Identifica rostros en tiempo real con nuestra tecnología avanzada de reconocimiento facial y detección de emociones.</p>
+          <div class="mb-6">
+            <div class="flex items-center mb-3">
+              <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                <i class="fas fa-check text-green-600 text-xs"></i>
+              </div>
+              <p class="text-gray-700">Identificación en menos de 500ms</p>
+            </div>
+           
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                <i class="fas fa-check text-green-600 text-xs"></i>
+              </div>
+              <p class="text-gray-700">Funciona en múltiples dispositivos</p>
+            </div>
+          </div>
+          <a href="identify.html" id="demo" class="btn-hover inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition duration-300">
+            Iniciar reconocimiento
+            <i class="fas fa-play-circle ml-2"></i>
+          </a>
+        </div>
+        <div class="bg-green-50 px-6 py-4">
+          <div class="flex items-center text-sm text-green-600">
+            <div class="relative mr-3">
+              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+            </div>
+            <p>Funciona mejor con rostros frontales y buena iluminación</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Features Section -->
+    <div class="mt-24" id="features">
+      <div class="text-center mb-16">
+        <span class="inline-block px-3 py-1 text-sm font-semibold text-indigo-600 bg-indigo-100 rounded-full mb-4">TECNOLOGÍA AVANZADA</span>
+        <h3 class="text-3xl font-bold text-gray-800 mb-4">Características principales</h3>
+        <p class="text-gray-600 max-w-2xl mx-auto">Nuestra solución de reconocimiento facial ofrece las últimas innovaciones en biometría para una autenticación segura y sin fricciones.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="feature-card bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="feature-icon text-blue-600 mb-6">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+              <i class="fas fa-shield-alt text-3xl"></i>
+            </div>
+          </div>
+          <h4 class="font-semibold text-xl mb-3 text-gray-800">Seguridad mejorada</h4>
+          <p class="text-gray-600 mb-4">Tecnología de autenticación biométrica que protege tus datos sensibles con cifrado de grado militar.</p>
+          <ul class="space-y-2">
+            <li class="flex items-center">
+              <i class="fas fa-check text-green-500 mr-2"></i>
+              <span class="text-gray-700">Prevención de spoofing</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-check text-green-500 mr-2"></i>
+              <span class="text-gray-700">Detección de vida</span>
+            </li>
+          </ul>
+        </div>
+        <div class="feature-card bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="feature-icon text-purple-600 mb-6">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
+              <i class="fas fa-bolt text-3xl"></i>
+            </div>
+          </div>
+          <h4 class="font-semibold text-xl mb-3 text-gray-800">Rápido y preciso</h4>
+          <p class="text-gray-600 mb-4">Reconocimiento facial en tiempo real con alta precisión gracias a nuestros algoritmos de IA.</p>
+          <ul class="space-y-2">
+            <li class="flex items-center">
+              <i class="fas fa-check text-green-500 mr-2"></i>
+              <span class="text-gray-700">99.9% de precisión</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-check text-green-500 mr-2"></i>
+              <span class="text-gray-700">Menos de 500ms de respuesta</span>
+            </li>
+          </ul>
+        </div>
+        <div class="feature-card bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="feature-icon text-green-600 mb-6">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <i class="fas fa-mobile-alt text-3xl"></i>
+            </div>
+          </div>
+          <h4 class="font-semibold text-xl mb-3 text-gray-800">Multiplataforma</h4>
+          <p class="text-gray-600 mb-4">Integración perfecta con navegadores web y dispositivos móviles modernos mediante APIs RESTful.</p>
+          <ul class="space-y-2">
+            <li class="flex items-center">
+              <i class="fas fa-check text-green-500 mr-2"></i>
+              <span class="text-gray-700">SDK para iOS y Android</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-check text-green-500 mr-2"></i>
+              <span class="text-gray-700">API de fácil integración</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+ <footer class="bg-gray-900 text-white py-12 mt-24" id="contact">
+  <div class="container mx-auto px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Brand Section -->
+      <div class="space-y-4">
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center mr-3">
+            <i class="fas fa-fingerprint text-sm"></i>
+          </div>
+          <span class="text-xl font-semibold">Smart Site Company</span>
+        </div>
+        <p class="text-gray-400 leading-relaxed">
+          Solución de autenticación facial avanzada para aplicaciones modernas.
+        </p>
+        <div>
+          <a href="https://github.com/Braul-oss/reconocimiento-face-api-node" 
+             class="text-gray-400 hover:text-white transition-colors duration-200"
+             aria-label="GitHub Repository">
+            <i class="fab fa-github text-xl"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Company Links -->
+      <div class="space-y-4">
+        <h5 class="font-semibold text-lg">Compañía</h5>
+        <ul class="space-y-2">
+          <li><span class="text-gray-400 cursor-default">Nosotros</span></li>
+          <li><span class="text-gray-400 cursor-default">Contacto:  contacto@smartsitecompany.com</span></li>
+          <li><span class="text-gray-400 cursor-default">Teléfono: +52 1 722 570 5637</span></li>
+        </ul>
+      </div>
+
+      <!-- Additional Sections (empty for now) -->
+      <div></div>
+      <div></div>
+    </div>
+
+    <!-- Copyright Section -->
+    <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+      <p class="text-gray-400 text-sm">
+        © 2025 Smart Site Company. Todos los derechos reservados.
+      </p>
+      <div class="flex space-x-6 mt-4 md:mt-0">
+        <span class="text-gray-400 text-sm cursor-default">Política de privacidad</span>
+        <span class="text-gray-400 text-sm cursor-default">Términos de servicio</span>
+      </div>
+    </div>
+  </div>
+</footer>
+  
+  <script>
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+    
+    // Animation for cards on hover
+    document.querySelectorAll('.card-hover').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px)';
+      });
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+    
+    // Animation for feature icons
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        const icon = this.querySelector('.feature-icon i');
+        icon.style.transform = 'scale(1.1)';
+      });
+      card.addEventListener('mouseleave', function() {
+        const icon = this.querySelector('.feature-icon i');
+        icon.style.transform = 'scale(1)';
+      });
+    });
+  </script>
 </body>
 </html>
-

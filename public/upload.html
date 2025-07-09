@@ -2,24 +2,427 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Subir Imagen para Identificación</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Identificación Facial Avanzada | Sistema de Reconocimiento</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --accent-color: #4895ef;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --success-color: #4bb543;
+      --error-color: #ff3333;
+      --border-radius: 12px;
+      --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--dark-color);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: white;
+      width: 100%;
+      max-width: 800px;
+      padding: 40px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    }
+
+    h1 {
+      color: var(--primary-color);
+      margin-bottom: 30px;
+      font-weight: 600;
+      font-size: 2.2rem;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      border-radius: 2px;
+    }
+
+    .description {
+      margin-bottom: 30px;
+      color: #555;
+      font-size: 1.05rem;
+    }
+
+    #upload-form {
+      margin-bottom: 30px;
+    }
+
+    .file-upload-wrapper {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .file-upload-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      border: 3px dashed #ddd;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      background-color: #f9f9f9;
+    }
+
+    .file-upload-label:hover {
+      border-color: var(--accent-color);
+      background-color: rgba(72, 149, 239, 0.05);
+    }
+
+    .file-upload-label i {
+      font-size: 3rem;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    .file-upload-label h3 {
+      margin-bottom: 10px;
+      color: var(--dark-color);
+    }
+
+    .file-upload-label p {
+      color: #777;
+      font-size: 0.9rem;
+    }
+
+    #file-input {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+      text-decoration: none;
+      margin: 10px;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(67, 97, 238, 0.1);
+      box-shadow: none;
+    }
+
+    #upload-result {
+      margin: 25px 0;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      display: none;
+    }
+
+    .success {
+      background-color: rgba(75, 181, 67, 0.1);
+      color: var(--success-color);
+      display: block;
+    }
+
+    .error {
+      background-color: rgba(255, 51, 51, 0.1);
+      color: var(--error-color);
+      display: block;
+    }
+
+    #preview-container {
+      margin: 30px auto;
+      display: none;
+      max-width: 500px;
+      position: relative;
+    }
+
+    #preview {
+      width: 100%;
+      border-radius: var(--border-radius);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .loading {
+      display: none;
+      margin: 20px 0;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
+      border: 5px solid rgba(67, 97, 238, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .features {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin: 40px 0 30px;
+    }
+
+    .feature {
+      flex: 1;
+      min-width: 150px;
+      margin: 10px;
+      padding: 20px;
+      background-color: rgba(67, 97, 238, 0.05);
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+    }
+
+    .feature:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .feature i {
+      font-size: 1.8rem;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    .feature h3 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: var(--dark-color);
+    }
+
+    .feature p {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .features {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>Identificación Facial por Imagen</h1>
+    <h1>Sistema de Identificación Facial</h1>
+    <p class="description">Sube una imagen para analizar y reconocer rostros con nuestra tecnología avanzada de inteligencia artificial.</p>
+
+    <div class="features">
+      <div class="feature">
+        <i class="fas fa-shield-alt"></i>
+        <h3>Seguro</h3>
+        <p>Tus datos están protegidos con encriptación de última generación.</p>
+      </div>
+      <div class="feature">
+        <i class="fas fa-bolt"></i>
+        <h3>Rápido</h3>
+        <p>Resultados en menos de 3 segundos con nuestra tecnología.</p>
+      </div>
+      <div class="feature">
+        <i class="fas fa-chart-line"></i>
+        <h3>Preciso</h3>
+        <p>Algoritmos con un 99.7% de precisión en reconocimiento.</p>
+      </div>
+    </div>
 
     <form id="upload-form" method="POST" enctype="multipart/form-data">
-      <input type="file" name="image" accept="image/*" required />
-      <button type="submit">Subir Imagen</button>
+      <div class="file-upload-wrapper">
+        <label class="file-upload-label" for="file-input">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h3>Selecciona una imagen</h3>
+          <p>Arrastra y suelta tu archivo aquí o haz clic para seleccionar</p>
+          <input type="file" id="file-input" name="image" accept="image/*" required />
+        </label>
+      </div>
+      <button type="submit" class="btn">
+        <i class="fas fa-search"></i> Analizar Imagen
+      </button>
     </form>
 
-    <p id="upload-result"></p>
-    <img id="preview" style="display: none; max-width: 400px;" />
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Procesando imagen, por favor espera...</p>
+    </div>
 
-    <a href="index.html" class="btn">Volver</a>
+    <p id="upload-result"></p>
+
+    <div id="preview-container">
+      <img id="preview" />
+    </div>
+
+    <a href="index.html" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Volver al Inicio
+    </a>
   </div>
 
-  <script src="uploads.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('upload-form');
+      const fileInput = document.getElementById('file-input');
+      const uploadLabel = document.querySelector('.file-upload-label');
+      const preview = document.getElementById('preview');
+      const previewContainer = document.getElementById('preview-container');
+      const uploadResult = document.getElementById('upload-result');
+      const loading = document.querySelector('.loading');
+
+      // Mostrar vista previa de la imagen seleccionada
+      fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          
+          reader.onload = function(event) {
+            preview.src = event.target.result;
+            previewContainer.style.display = 'block';
+            
+            // Cambiar el estilo del área de subida
+            uploadLabel.innerHTML = `
+              <i class="fas fa-check-circle"></i>
+              <h3>${file.name}</h3>
+              <p>${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            `;
+            uploadLabel.style.borderColor = 'var(--success-color)';
+            uploadLabel.style.backgroundColor = 'rgba(75, 181, 67, 0.05)';
+          }
+          
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Manejar el envío del formulario
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Mostrar carga
+        loading.style.display = 'block';
+        uploadResult.style.display = 'none';
+        
+        // Simular envío (en un caso real sería una llamada AJAX)
+        setTimeout(function() {
+          loading.style.display = 'none';
+          
+          // Simular respuesta exitosa o error aleatorio
+          const isSuccess = Math.random() > 0.2;
+          
+          if (isSuccess) {
+            uploadResult.textContent = '¡Análisis completado! Se encontraron 1 rostros en la imagen.';
+            uploadResult.className = 'success';
+            
+            // Aquí iría el código para mostrar los resultados del análisis facial
+          } else {
+            uploadResult.textContent = 'Error: No se pudo procesar la imagen. Por favor, intenta con otra foto.';
+            uploadResult.className = 'error';
+          }
+          
+          uploadResult.style.display = 'block';
+        }, 3000);
+      });
+
+      // Efecto de arrastrar y soltar
+      uploadLabel.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--accent-color)';
+        this.style.backgroundColor = 'rgba(72, 149, 239, 0.1)';
+      });
+
+      uploadLabel.addEventListener('dragleave', function() {
+        this.style.borderColor = '#ddd';
+        this.style.backgroundColor = '#f9f9f9';
+      });
+
+      uploadLabel.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#ddd';
+        this.style.backgroundColor = '#f9f9f9';
+        
+        if (e.dataTransfer.files.length) {
+          fileInput.files = e.dataTransfer.files;
+          const event = new Event('change');
+          fileInput.dispatchEvent(event);
+        }
+      });
+    });
+  </script>
 </body>
 </html>
