@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>CRUD de Usuarios</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, button { margin: 5px; }
+    table { border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h1>CRUD de Usuarios Registrados</h1>
+
+  <button onclick="loadUsers()">🔄 Cargar Usuarios</button>
+
+  <h3>Actualizar Timestamp</h3>
+  <input type="number" id="updateId" placeholder="ID">
+  <input type="datetime-local" id="updateTimestamp">
+  <button onclick="updateUser()">Actualizar</button>
+
+  <h3>Eliminar Usuario</h3>
+  <input type="number" id="deleteId" placeholder="ID">
+  <button onclick="deleteUser()">Eliminar</button>
+
+  <table id="usersTable">
+    <thead>
+      <tr><th>ID</th><th>Timestamp</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="crud.js"></script>
+</body>
+</html>
