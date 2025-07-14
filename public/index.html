@@ -7,108 +7,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary: #4F46E5;
-      --primary-dark: #4338CA;
-      --secondary: #10B981;
-      --dark: #1F2937;
-      --light: #F9FAFB;
-    }
-    
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #F3F4F6;
-      color: var(--dark);
-      scroll-behavior: smooth;
-    }
-    
-    .gradient-bg {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    }
-    
-    .card-hover {
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .card-hover:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-    }
-    
-    .pulse-animation {
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
-      }
-      70% {
-        box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
-      }
-    }
-    
-    .floating {
-      animation: floating 3s ease-in-out infinite;
-    }
-    
-    @keyframes floating {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-15px); }
-      100% { transform: translateY(0px); }
-    }
-    
-    .feature-icon {
-      transition: all 0.3s ease;
-    }
-    
-    .feature-card:hover .feature-icon {
-      transform: scale(1.1);
-      color: var(--primary);
-    }
-    
-    .btn-hover {
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .btn-hover:hover {
-      transform: translateY(-2px);
-    }
-    
-    .btn-hover::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-    }
-    
-    .btn-hover:hover::after {
-      transform: translateX(0);
-    }
-    
-    .fade-in {
-      animation: fadeIn 1s ease-in;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-  </style>
+  <link rel="stylesheet" href="index.css">
 </head>
 <body class="min-h-screen">
+  
   <!-- Navigation -->
   <nav class="bg-white shadow-sm sticky top-0 z-50 fade-in">
     <div class="container mx-auto px-6 py-4">
@@ -333,23 +235,23 @@
   </div>
   
   <!-- Footer -->
- <footer class="bg-gray-900 text-white py-12 mt-24" id="contact">
-  <div class="container mx-auto px-6 lg:px-8">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<footer class="w-full bg-gray-900 text-white py-12" id="contact">
+  <div class="container mx-auto px-6 lg:px-8 text-center">
+    <div class="flex flex-col items-center">
       <!-- Brand Section -->
-      <div class="space-y-4">
-        <div class="flex items-center">
+      <div class="space-y-4 max-w-md mb-8">
+        <div class="flex items-center justify-center">
           <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center mr-3">
-            <i class="fas fa-fingerprint text-sm"></i>
+            <i class="fas fa-fingerprint text-sm text-white"></i>
           </div>
-          <span class="text-xl font-semibold">Smart Site Company</span>
+          <span class="text-xl font-semibold text-white">Smart Site Company</span>
         </div>
-        <p class="text-gray-400 leading-relaxed">
+        <p class="text-white leading-relaxed">
           Solución de autenticación facial avanzada para aplicaciones modernas.
         </p>
         <div>
           <a href="https://github.com/Braul-oss/reconocimiento-face-api-node" 
-             class="text-gray-400 hover:text-white transition-colors duration-200"
+             class="text-white hover:text-indigo-400 transition-colors duration-200"
              aria-label="GitHub Repository">
             <i class="fab fa-github text-xl"></i>
           </a>
@@ -357,28 +259,37 @@
       </div>
 
       <!-- Company Links -->
-      <div class="space-y-4">
-        <h5 class="font-semibold text-lg">Compañía</h5>
+      <div class="space-y-4 max-w-md mb-8">
+        <h5 class="font-semibold text-lg text-white">Compañía</h5>
         <ul class="space-y-2">
-          <li><span class="text-gray-400 cursor-default">Nosotros</span></li>
-          <li><span class="text-gray-400 cursor-default">Contacto:  contacto@smartsitecompany.com</span></li>
-          <li><span class="text-gray-400 cursor-default">Teléfono: +52 1 722 570 5637</span></li>
+          <li><span class="text-white cursor-default">Nosotros</span></li>
+          <li><span class="text-white cursor-default">Contacto: contacto@smartsitecompany.com</span></li>
+          <li><span class="text-white cursor-default">Teléfono: +52 1 722 570 5637</span></li>
         </ul>
       </div>
 
-      <!-- Additional Sections (empty for now) -->
-      <div></div>
-      <div></div>
+      <!-- Copyright Section -->
+      <div class="border-t border-gray-700 w-full pt-8 mt-8 flex flex-col items-center">
+        <p class="text-white text-sm mb-4">
+          © 2025 Smart Site Company. Todos los derechos reservados.
+        </p>
+        <div class="flex space-x-6">
+          <span class="text-white text-sm cursor-default hover:text-indigo-400 transition-colors">Política de privacidad</span>
+          <span class="text-white text-sm cursor-default hover:text-indigo-400 transition-colors">Términos de servicio</span>
+        </div>
+      </div>
     </div>
+  </div>
+</footer>
 
     <!-- Copyright Section -->
-    <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-      <p class="text-gray-400 text-sm">
+    <div class="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+      <p class="text-white text-sm">
         © 2025 Smart Site Company. Todos los derechos reservados.
       </p>
       <div class="flex space-x-6 mt-4 md:mt-0">
-        <span class="text-gray-400 text-sm cursor-default">Política de privacidad</span>
-        <span class="text-gray-400 text-sm cursor-default">Términos de servicio</span>
+        <span class="text-white text-sm cursor-default hover:text-indigo-400 transition-colors">Política de privacidad</span>
+        <span class="text-white text-sm cursor-default hover:text-indigo-400 transition-colors">Términos de servicio</span>
       </div>
     </div>
   </div>
