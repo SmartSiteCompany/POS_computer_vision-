@@ -3,7 +3,7 @@ const router = express.Router();
 const faceapi = require("@vladmandic/face-api");
 const fs = require("fs");
 const path = require("path");
-const db = require("./models/db");
+//const db = require("./models/db");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" }); // carpeta temporal
 const canvas = require("canvas");
@@ -111,7 +111,7 @@ router.post("/register", async (req, res) => {
       return res.json({ success: false, message: "No se detectaron rostros." });
     }
 
-    const knownEncodings = await loadEncodingsFromDB();
+    const knownEncodings = await loadEncodingsFromMongodb(); // CAMBIO AQUÍ
     let registered = 0;
     let duplicated = 0;
     const faces = [];
@@ -143,20 +143,23 @@ router.post("/register", async (req, res) => {
       }
 
       const descriptorArray = Array.from(descriptor);
-      const userId = await new Promise((resolve, reject) => {
-        db.run(
-          "INSERT INTO users (encoding) VALUES (?)",
-          [JSON.stringify(descriptorArray)],
-          function (err) {
-            if (err) reject(err);
-            else resolve(this.lastID);
-          }
-        );
-      });
 
+      // 🧠 GUARDAR EN MONGODB
+      const newUser = new User({ encoding: descriptorArray });
+      const savedUser = await newUser.save();
+      const userId = savedUser._id.toString();
+
+      // 🖼️ Guardar recorte de rostro (opcional)
       const faceCanvas = createCanvas(width, height);
       const faceCtx = faceCanvas.getContext("2d");
       faceCtx.drawImage(canvasBase, x, y, width, height, 0, 0, width, height);
+
+      // Verificar que el directorio 'dataset' exista
+      const datasetDir = path.join(__dirname, "dataset");
+      if (!fs.existsSync(datasetDir)) {
+        fs.mkdirSync(datasetDir, { recursive: true });
+      }
+      
       const facePath = path.join(__dirname, "dataset", `user_${userId}.jpg`);
       fs.writeFileSync(facePath, faceCanvas.toBuffer("image/jpeg"));
 
@@ -177,6 +180,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
+
 // Función de colores
 function generateColor(index, total) {
   const hue = Math.floor((360 / total) * index);
@@ -185,10 +189,16 @@ function generateColor(index, total) {
 
 
 // Ruta para identificación facial múltiple
+
 router.post("/identify", async (req, res) => {
   try {
     await loadModels();
     const { image } = req.body;
+
+    if (!image) {
+      return res.status(400).json({ success: false, message: "Imagen no proporcionada" });
+    }
+
     const buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
     const tensor = faceapi.tf.node.decodeImage(buffer);
 
@@ -201,18 +211,19 @@ router.post("/identify", async (req, res) => {
       return res.json({ success: true, recognized: [] });
     }
 
-    const knownEncodings = await loadEncodingsFromDB();
+    // Cargar usuarios desde MongoDB
+    const knownUsers = await User.find();
 
-    const recognized = detections.map((det) => {
-  let bestMatch = null;
-  let bestDistance = 1;
+    const recognized = detections.map((det, i) => {
+      let bestMatch = null;
+      let bestDistance = 1;
 
-      for (const user of knownEncodings) {
-        const storedDescriptor = new Float32Array(user.descriptor);
+      for (const user of knownUsers) {
+        const storedDescriptor = new Float32Array(user.encoding);
         const distance = faceapi.euclideanDistance(det.descriptor, storedDescriptor);
         if (distance < bestDistance) {
           bestDistance = distance;
-          bestMatch = user.id;
+          bestMatch = user._id;
         }
       }
 
@@ -230,6 +241,7 @@ router.post("/identify", async (req, res) => {
     });
 
     return res.json({ success: true, recognized });
+
   } catch (err) {
     console.error("Error en /identify:", err);
     res.status(500).json({ success: false, error: err.message });

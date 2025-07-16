@@ -61,15 +61,26 @@ function showResultsWithCanvas(recognized) {
 
   recognized.forEach((item) => {
     const { label, box } = item;
-    const id = label.replace("ID: ", "").trim();
-    const color = getColorForId(id);
+
+    let color;
+    if (label.startsWith("ID:")) {
+      const id = label.replace("ID: ", "").trim();
+      color = getColorForId(id);
+    } else {
+      color = "gray";
+    }
 
     // Dibujar cuadro
     ctx.strokeStyle = color;
     ctx.lineWidth = 3;
     ctx.strokeRect(box.x, box.y, box.width, box.height);
 
-    
+    // Dibujar texto
+    ctx.font = "16px Arial";
+    ctx.fillStyle = color;
+    ctx.fillText(label, box.x, box.y - 8);
+
+    // Mostrar en HTML
     const p = document.createElement("p");
     p.textContent = label;
     p.style.color = color;

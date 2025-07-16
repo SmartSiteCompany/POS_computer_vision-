@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const routes = require("./routes");
 const path = require("path");
-const db = require('./models/db');
+//const db = require('./models/db');
 const conectMongo = require('./models/mongo');
 
 app.use(express.static("public"));
