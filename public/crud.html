@@ -1,36 +1,65 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>CRUD de Usuarios</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    input, button { margin: 5px; }
-    table { border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración de Usuarios</title>
+  <link rel="stylesheet" href="crud.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <h1>CRUD de Usuarios Registrados</h1>
+  <div class="container">
+    <header class="header">
+      <h1><i class="fas fa-users-cog"></i> Administración de Usuarios Smart Site Company</h1>
+      <button class="btn btn-primary" onclick="loadUsers()">
+        <i class="fas fa-sync-alt"></i> Cargar Usuarios
+      </button>
+    </header>
 
-  <button onclick="loadUsers()">🔄 Cargar Usuarios</button>
+    <div class="card">
+      <h2><i class="fas fa-user-clock"></i> Actualizar Fecha/Hora</h2>
+      <div class="form-group">
+        <label for="updateId">ID de Usuario:</label>
+        <input type="number" id="updateId" placeholder="Ingrese el ID" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="updateTimestamp">Nueva Fecha/Hora:</label>
+        <input type="datetime-local" id="updateTimestamp" class="form-control">
+      </div>
+      <button class="btn btn-success" onclick="updateUser()">
+        <i class="fas fa-save"></i> Actualizar
+      </button>
+    </div>
 
-  <h3>Actualizar Timestamp</h3>
-  <input type="number" id="updateId" placeholder="ID">
-  <input type="datetime-local" id="updateTimestamp">
-  <button onclick="updateUser()">Actualizar</button>
+    <div class="card">
+      <h2><i class="fas fa-user-times"></i> Eliminar Usuario</h2>
+      <div class="form-group">
+        <label for="deleteId">ID de Usuario:</label>
+        <input type="number" id="deleteId" placeholder="Ingrese el ID" class="form-control">
+      </div>
+      <button class="btn btn-danger" onclick="deleteUser()">
+        <i class="fas fa-trash-alt"></i> Eliminar
+      </button>
+    </div>
 
-  <h3>Eliminar Usuario</h3>
-  <input type="number" id="deleteId" placeholder="ID">
-  <button onclick="deleteUser()">Eliminar</button>
-
-  <table id="usersTable">
-    <thead>
-      <tr><th>ID</th><th>Timestamp</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
+    <div class="card table-container">
+      <h2><i class="fas fa-list"></i> Lista de Usuarios</h2>
+      <table id="usersTable" class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha/Hora de Registro</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+<footer class="footer">
+  <p>© 2025 Smart Site Company. Todos los derechos reservados.</p>
+</footer>
   <script src="crud.js"></script>
 </body>
 </html>
