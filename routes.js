@@ -319,8 +319,8 @@ router.post("/upload-image", upload.single("image"), async (req, res) => {
 
 
 router.post("/register-image", upload.single("image"), async (req, res) => {
-
   const registeredFaces = [];
+
   try {
     await loadModels();
 
@@ -342,65 +342,63 @@ router.post("/register-image", upload.single("image"), async (req, res) => {
 
     const existingEncodings = await loadEncodingsFromMongodb();
 
-      for (let i = 0; i < detections.length; i++) {
-        const det = detections[i];
-        const color = generateColor(i,detections.length);
-        let isNew = true;
-        for (const user of existingEncodings) {
-          const dist = faceapi.euclideanDistance(det.descriptor, new Float32Array(user.descriptor));
-          if (dist < 0.5) {
-            isNew = false;
-            break;
-          }
+    for (let i = 0; i < detections.length; i++) {
+      const det = detections[i];
+      const color = generateColor(i, detections.length);
+      const { x, y, width, height } = det.detection.box;
+
+      let isNew = true;
+      for (const user of existingEncodings) {
+        const dist = faceapi.euclideanDistance(
+          det.descriptor,
+          new Float32Array(user.descriptor)
+        );
+        if (dist < 0.5) {
+          isNew = false;
+          break;
         }
+      }
 
       let newId = null;
 
-    if (isNew) {
-            const descriptorArray = Array.from(det.descriptor);
-            const newUser = new User({ encoding: descriptorArray });
-            const saved = await newUser.save();
-            newId = saved._id.toString();
+      if (isNew) {
+        const descriptorArray = Array.from(det.descriptor);
+        const newUser = new User({ encoding: descriptorArray });
+        const saved = await newUser.save();
+        newId = saved._id.toString();
 
-            registeredFaces.push({ id: newId, color });
+        registeredFaces.push({ id: newId, color });
 
-            // guardar imagen recortada del rostro
-            const box = det.detection.box;
-            const x = box.x;
-            const y = box.y;
-            const width = box.width;
-            const height = box.height;
+        // guardar imagen recortada del rostro
+        const faceCanvas = createCanvas(width, height);
+        const faceCtx = faceCanvas.getContext("2d");
+        faceCtx.drawImage(c, x, y, width, height, 0, 0, width, height);
 
-            const faceCanvas = createCanvas(width, height);
-            const faceCtx = faceCanvas.getContext("2d");
-            faceCtx.drawImage(c, x, y, width, height, 0, 0, width, height);
-
-            const facePath = path.join(__dirname, "dataset", `user_${newId}.jpg`);
-            fs.writeFileSync(facePath, faceCanvas.toBuffer("image/jpeg"));
-          }
-
-          ctx.strokeStyle = color;
-          ctx.lineWidth = 2;
-          ctx.strokeRect(x, y, width, height);
-        }
-
-        const outBase64 = c.toDataURL("image/jpeg");
-        fs.unlinkSync(imagePath); // eliminar imagen temporal
-
-        res.json({
-          success: true,
-          processedImage: outBase64,
-          registered: registeredFaces,
-        });
-      } catch (err) {
-        console.error("Error en /register-image:", err);
-        res
-          .status(500)
-          .json({ success: false, message: "Error registrando imagen." });
+        const facePath = path.join(__dirname, "dataset", `user_${newId}.jpg`);
+        fs.writeFileSync(facePath, faceCanvas.toBuffer("image/jpeg"));
       }
 
-});
+      // DIBUJAR RECUADRO (para todos los rostros)
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, width, height);
+    }
 
+    const outBase64 = c.toDataURL("image/jpeg");
+    fs.unlinkSync(imagePath); // eliminar imagen temporal
+
+    res.json({
+      success: true,
+      processedImage: outBase64,
+      registered: registeredFaces,
+    });
+  } catch (err) {
+    console.error("Error en /register-image:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Error registrando imagen." });
+  }
+});
 
 
 router.get("/users", async (req, res) => {
@@ -413,21 +411,6 @@ router.get("/users", async (req, res) => {
   }
 });
 
-
-
-router.get("/users/:id", (req, res) => {
-  const { id } = req.params;
-  db.get("SELECT id, timestamp FROM users WHERE id = ?", [id], (err, row) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Error al obtener registro" });
-    }
-    if (!row) {
-      return res.status(404).json({ error: "Registro no encontrado" });
-    }
-    res.json({ success: true, user: row });
-  });
-});
 
 
 router.delete("/users/:id", async (req, res) => {
