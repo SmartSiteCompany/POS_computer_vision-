@@ -319,6 +319,8 @@ router.post("/upload-image", upload.single("image"), async (req, res) => {
 
 
 router.post("/register-image", upload.single("image"), async (req, res) => {
+
+  const registeredFaces = [];
   try {
     await loadModels();
 
@@ -363,9 +365,16 @@ router.post("/register-image", upload.single("image"), async (req, res) => {
             registeredFaces.push({ id: newId, color });
 
             // guardar imagen recortada del rostro
+            const box = det.detection.box;
+            const x = box.x;
+            const y = box.y;
+            const width = box.width;
+            const height = box.height;
+
             const faceCanvas = createCanvas(width, height);
             const faceCtx = faceCanvas.getContext("2d");
             faceCtx.drawImage(c, x, y, width, height, 0, 0, width, height);
+
             const facePath = path.join(__dirname, "dataset", `user_${newId}.jpg`);
             fs.writeFileSync(facePath, faceCanvas.toBuffer("image/jpeg"));
           }
@@ -394,14 +403,14 @@ router.post("/register-image", upload.single("image"), async (req, res) => {
 
 
 
-router.get("/users", (req, res) => {
-  db.all("SELECT id, timestamp FROM users", [], (err, rows) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Error al obtener registros" });
-    }
-    res.json({ success: true, users: rows });
-  });
+router.get("/users", async (req, res) => {
+  try {
+    const users = await User.find({}, { encoding: 0 }).sort({ createdAt: -1 }); // ocultar el campo encoding
+    res.json({ success: true, users });
+  } catch (err) {
+    console.error("Error al obtener usuarios:", err);
+    res.status(500).json({ error: "Error al obtener registros" });
+  }
 });
 
 
@@ -421,41 +430,44 @@ router.get("/users/:id", (req, res) => {
 });
 
 
-
-router.delete("/users/:id", (req, res) => {
-  const { id } = req.params;
-  db.run("DELETE FROM users WHERE id = ?", [id], function (err) {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Error al eliminar registro" });
-    }
-    if (this.changes === 0) {
+router.delete("/users/:id", async (req, res) => {
+  try {
+    const result = await User.findByIdAndDelete(req.params.id);
+    if (!result) {
       return res.status(404).json({ error: "Registro no encontrado" });
     }
     res.json({ success: true, message: "Registro eliminado" });
-  });
+  } catch (err) {
+    console.error("Error al eliminar usuario:", err);
+    res.status(500).json({ error: "Error al eliminar registro" });
+  }
 });
 
 
+router.put("/users/:id", async (req, res) => {
+  try {
+    const { timestamp } = req.body;
+    const parsedDate = new Date(timestamp);
 
-router.put("/users/:id", (req, res) => {
-  const { id } = req.params;
-  const { timestamp } = req.body;
-
-  db.run(
-    "UPDATE users SET timestamp = ? WHERE id = ?",
-    [timestamp, id],
-    function (err) {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Error al actualizar registro" });
-      }
-      if (this.changes === 0) {
-        return res.status(404).json({ error: "Registro no encontrado" });
-      }
-      res.json({ success: true, message: "Registro actualizado" });
+    if (isNaN(parsedDate.getTime())) {
+      return res.status(400).json({ error: "Fecha inválida" });
     }
-  );
+
+    const result = await User.findByIdAndUpdate(
+      req.params.id,
+      { createdAt: parsedDate },
+      { new: true }
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: "Registro no encontrado" });
+    }
+
+    res.json({ success: true, message: "Registro actualizado", user: result });
+  } catch (err) {
+    console.error("Error al actualizar usuario:", err);
+    res.status(500).json({ error: "Error al actualizar registro" });
+  }
 });
 
 

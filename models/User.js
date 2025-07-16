@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
         type: [Number],
         required: true, 
     },
-    timestamp: {
+    createdAt: {
         type: Date,
         default: Date.now, 
     },

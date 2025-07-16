@@ -1,47 +1,85 @@
 async function loadUsers() {
-  const res = await fetch("/users");
-  const data = await res.json();
-
   const tbody = document.querySelector("#usersTable tbody");
-  tbody.innerHTML = "";
+  tbody.innerHTML = ""; // limpiar tabla
 
-  if (data.success) {
-    data.users.forEach(user => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${user.id}</td><td>${user.timestamp}</td>`;
-      tbody.appendChild(tr);
-    });
-  } else {
-    alert("Error cargando usuarios");
+  try {
+    const res = await fetch("/users");
+    const data = await res.json();
+
+    if (data.success) {
+      data.users.forEach((user) => {
+        const row = document.createElement("tr");
+
+        const fecha = new Date(user.createdAt).toLocaleString("es-MX", {
+          dateStyle: "short",
+          timeStyle: "short",
+        });
+
+        row.innerHTML = `
+          <td>${user._id}</td>
+          <td>${fecha}</td>
+          <td>
+            <button class="btn btn-warning" onclick="showUpdatePrompt('${user._id}', '${user.createdAt}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-danger" onclick="deleteUser('${user._id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    } else {
+      alert("Error al cargar usuarios");
+    }
+  } catch (err) {
+    console.error("Error cargando usuarios:", err);
   }
 }
 
-async function updateUser() {
-  const id = document.getElementById("updateId").value;
-  const timestamp = document.getElementById("updateTimestamp").value;
+async function deleteUser(id) {
+  if (!confirm("¿Seguro que deseas eliminar este usuario?")) return;
 
-  if (!id || !timestamp) return alert("ID y timestamp requeridos");
+  try {
+    const res = await fetch(`/users/${id}`, { method: "DELETE" });
+    const data = await res.json();
 
-  const res = await fetch(`/users/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ timestamp })
-  });
-
-  const data = await res.json();
-  alert(data.message || data.error);
-  loadUsers();
+    if (data.success) {
+      alert("Usuario eliminado");
+      loadUsers();
+    } else {
+      alert(data.error || "No se pudo eliminar");
+    }
+  } catch (err) {
+    console.error("Error eliminando usuario:", err);
+  }
 }
 
-async function deleteUser() {
-  const id = document.getElementById("deleteId").value;
-  if (!id) return alert("Ingresa un ID");
+function showUpdatePrompt(id, currentDate) {
+  const newDate = prompt("Nueva fecha (YYYY-MM-DDTHH:mm):", new Date(currentDate).toISOString().slice(0, 16));
+  if (!newDate) return;
 
-  const res = await fetch(`/users/${id}`, { method: "DELETE" });
-  const data = await res.json();
-  alert(data.message || data.error);
-  loadUsers();
+  updateUser(id, newDate);
 }
 
-// Cargar al inicio
-loadUsers();
+async function updateUser(id, newTimestamp) {
+  try {
+    const res = await fetch(`/users/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ timestamp: newTimestamp }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Fecha actualizada");
+      loadUsers();
+    } else {
+      alert(data.error || "No se pudo actualizar");
+    }
+  } catch (err) {
+    console.error("Error actualizando usuario:", err);
+  }
+}
