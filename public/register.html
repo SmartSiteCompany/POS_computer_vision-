@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistema de Registro Facial</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<link rel="stylesheet" href="register.css">
+  <link rel="stylesheet" href="register.css">
 </head>
 <body>
   <div class="container">
     <header>
-      <h1><i class="fas fa-user-circle"></i> Sistema de Registro Facial Smart Syte Copany</h1>
+      <h1><i class="fas fa-user-circle"></i> Sistema de Registro Facial Smart Site Copany</h1>
       <p>Registre rostros mediante cámara web o subiendo una imagen</p>
     </header>
 
@@ -30,7 +30,7 @@
       </div>
       
       <div class="btn-group">
-        <button onclick="register()" class="btn">
+        <button onclick="register()" class="btn btn-primary">
           <i class="fas fa-save"></i> Registrar Rostro
         </button>
         <a href="index.html" class="btn btn-secondary">
@@ -38,18 +38,19 @@
         </a>
       </div>
     </div>
-
+     
     <div id="image-tab" class="tab-content">
       <form id="register-form" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="image-upload">
-            <i class="fas fa-upload"></i> Seleccione una imagen
+        <div class="form-group file-upload-wrapper">
+          <label class="file-upload-label btn-primary">
+            <i class="fas fa-upload"></i> Seleccionar imagen
+            <input type="file" id="image-upload" name="image" accept="image/*" required />
           </label>
-          <input type="file" id="image-upload" name="image" accept="image/*" required />
+          <span id="file-name" class="file-name"></span>
         </div>
         
         <div class="btn-group">
-          <button type="submit" class="btn">
+          <button type="submit" class="btn btn-primary">
             <i class="fas fa-check-circle"></i> Registrar Rostro
           </button>
           <a href="index.html" class="btn btn-secondary">
@@ -97,6 +98,7 @@
         imageUpload.addEventListener('change', function(e) {
           const file = e.target.files[0];
           if(file) {
+            document.getElementById('file-name').textContent = file.name;
             const reader = new FileReader();
             reader.onload = function(event) {
               const preview = document.getElementById('register-preview');
@@ -107,6 +109,35 @@
           }
         });
       }
+
+      // Efectos para botones
+      document.querySelectorAll('.btn').forEach(button => {
+        // Efecto de onda al hacer clic
+        button.addEventListener('click', function(e) {
+          const x = e.clientX - e.target.getBoundingClientRect().left;
+          const y = e.clientY - e.target.getBoundingClientRect().top;
+          
+          const ripple = document.createElement('span');
+          ripple.classList.add('ripple');
+          ripple.style.left = `${x}px`;
+          ripple.style.top = `${y}px`;
+          
+          this.appendChild(ripple);
+          
+          setTimeout(() => {
+            ripple.remove();
+          }, 1000);
+        });
+        
+        // Efecto de hover
+        button.addEventListener('mouseenter', () => {
+          button.style.transform = 'translateY(-3px)';
+        });
+        
+        button.addEventListener('mouseleave', () => {
+          button.style.transform = 'translateY(0)';
+        });
+      });
     });
 
     // Aquí irían las funciones de register() y demás lógica de tu aplicación
