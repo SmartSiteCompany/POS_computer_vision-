@@ -15,7 +15,7 @@
       <header>
         <h1>
           <i class="fas fa-user-circle"></i> Sistema de Registro Facial Smart
-          Site Copany
+          Site Company
         </h1>
         <p>Registre rostros mediante cámara web o subiendo una imagen</p>
       </header>
@@ -65,13 +65,19 @@
             <button type="submit" class="btn btn-primary">
               <i class="fas fa-check-circle"></i> Registrar Rostro
             </button>
+            <button type="button" id="clear-button" class="btn btn-warning">
+              <i class="fas fa-eraser"></i> Limpiar
+            </button>
             <a href="index.html" class="btn btn-secondary">
               <i class="fas fa-arrow-left"></i> Volver al Inicio
             </a>
           </div>
         </form>
 
-        <div id="register-result" style="display: none"></div>
+        <div
+          id="register-result"
+          style="display: none; font-weight: bold; margin-top: 1rem"
+        ></div>
         <img id="register-preview" style="display: none" />
 
         <h3 style="margin-top: 2rem; color: var(--primary-color)">

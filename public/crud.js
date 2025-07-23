@@ -56,12 +56,44 @@ async function deleteUser(id) {
   }
 }
 
-function showUpdatePrompt(id, currentDate) {
-  const newDate = prompt("Nueva fecha (YYYY-MM-DDTHH:mm):", new Date(currentDate).toISOString().slice(0, 16));
-  if (!newDate) return;
+let currentUserId = null;
 
-  updateUser(id, newDate);
+function showUpdatePrompt(id, currentDate) {
+  currentUserId = id;
+  const input = document.getElementById("newDateInput");
+  input.value = new Date(currentDate).toISOString().slice(0, 16); // formato para input datetime-local
+  document.getElementById("updateModal").style.display = "flex";
 }
+
+function closeModal() {
+  document.getElementById("updateModal").style.display = "none";
+  currentUserId = null;
+}
+
+async function confirmUpdate() {
+  const newTimestamp = document.getElementById("newDateInput").value;
+  if (!newTimestamp || !currentUserId) return;
+
+  try {
+    const res = await fetch(`/users/${currentUserId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ timestamp: newTimestamp }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      closeModal();
+      loadUsers();
+    } else {
+      alert(data.error || "No se pudo actualizar");
+    }
+  } catch (err) {
+    console.error("Error actualizando usuario:", err);
+  }
+}
+
 
 async function updateUser(id, newTimestamp) {
   try {
