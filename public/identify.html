@@ -1,180 +1,203 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sistema de Identificación Facial</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="identify.css">
-</head>
-<body>
-  <header>
-    <div class="container">
-      <h1><i class="fas fa-user-circle"></i> Sistema de Registro Facial Smart Site Copany</h1>
-      <p class="subtitle">Reconocimiento facial Smart Site Company</p>
-    </div>
-  </header>
-
-  <main class="container">
-    <!-- Pestañas de navegación centradas -->
-    <div class="tabs-wrapper">
-      <div class="tabs-container">
-        <div class="tabs">
-          <button class="tab-btn active" data-tab="real-time-tab">
-            <i class="fas fa-video"></i> Detección en Tiempo Real
-          </button>
-          <button class="tab-btn" data-tab="image-tab">
-            <i class="fas fa-image"></i> Identificación por Imagen
-          </button>
-        </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Identificación Facial</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="identify.css" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>
+          <i class="fas fa-user-circle"></i> Sistema de Registro Facial Smart
+          Site Copany
+        </h1>
+        <p class="subtitle">Reconocimiento facial Smart Site Company</p>
       </div>
-    </div>
+    </header>
 
-    <!-- Contenido de las pestañas -->
-    <div class="tab-content active" id="real-time-tab">
-      <div class="card">
-        <div class="video-wrapper">
-          <video id="video" autoplay muted playsinline></video>
-          <canvas id="overlay"></canvas>
-        </div>
-
-        <div id="results">
-          <p class="status-message">Sistema listo. Iniciando cámara...</p>
-        </div>
-
-        <div class="action-buttons">
-          <button id="start-btn" class="btn btn-primary pulse">
-            <i class="fas fa-play"></i> Iniciar Detección
-          </button>
-          <button id="stop-btn" class="btn btn-primary" disabled>
-            <i class="fas fa-stop"></i> Detener Proceso
-          </button>
-          <a href="index.html" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver al Inicio
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-content" id="image-tab">
-      <div class="card">
-        <form id="upload-form" method="POST" enctype="multipart/form-data">
-          <div class="upload-section">
-            <div class="file-input-container">
-              <label class="btn btn-primary">
-                <i class="fas fa-upload"></i> 
-                <span>Seleccionar Imagen</span>
-                <input type="file" name="image" accept="image/*" class="file-input" required />
-              </label>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">
-              <i class="fas fa-search"></i> Identificar Persona
+    <main class="container">
+      <!-- Pestañas de navegación centradas -->
+      <div class="tabs-wrapper">
+        <div class="tabs-container">
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="real-time-tab">
+              <i class="fas fa-video"></i> Detección en Tiempo Real
+            </button>
+            <button class="tab-btn" data-tab="image-tab">
+              <i class="fas fa-image"></i> Identificación por Imagen
             </button>
           </div>
-        </form>
-
-        <div id="upload-result">
-          <p class="status-message">Seleccione una imagen para analizar</p>
-        </div>
-        
-        <div class="image-preview-container">
-          <img id="preview" />
-        </div>
-        
-        <div class="action-buttons">
-          <a href="index.html" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Volver al Inicio
-          </a>
         </div>
       </div>
-    </div>
-  </main>
 
-  <footer>
-    <p> © 2025 Smart Site Company. Todos los derechos reservados.</p>
-  </footer>
+      <!-- Contenido de las pestañas -->
+      <div class="tab-content active" id="real-time-tab">
+        <div class="card">
+          <div class="video-wrapper">
+            <video id="video" autoplay muted playsinline></video>
+            <canvas id="overlay"></canvas>
+          </div>
 
-  <script>
-    // Funcionalidad de las pestañas
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
+          <div id="results">
+            <p class="status-message">Sistema listo. Iniciando cámara...</p>
+          </div>
 
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tabId = btn.getAttribute('data-tab');
-        
-        // Remover clase active de todos los botones y contenidos
-        tabBtns.forEach(btn => btn.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-        
-        // Agregar clase active al botón y contenido seleccionado
-        btn.classList.add('active');
-        document.getElementById(tabId).classList.add('active');
+          <div class="action-buttons">
+            <button id="start-btn" class="btn btn-primary pulse">
+              <i class="fas fa-play"></i> Iniciar Detección
+            </button>
+            <button id="stop-btn" class="btn btn-primary" disabled>
+              <i class="fas fa-stop"></i> Detener Proceso
+            </button>
+            <a href="index.html" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Volver al Inicio
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="image-tab">
+        <div class="card">
+          <form id="upload-form" method="POST" enctype="multipart/form-data">
+            <div class="upload-section">
+              <div class="file-input-container">
+                <label class="btn btn-primary">
+                  <i class="fas fa-upload"></i>
+                  <span>Seleccionar Imagen</span>
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    class="file-input"
+                    required
+                  />
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Identificar Persona
+              </button>
+            </div>
+          </form>
+
+          <div id="upload-result">
+            <p class="status-message">Seleccione una imagen para analizar</p>
+          </div>
+
+          <div class="image-preview-container">
+            <img id="preview" />
+          </div>
+
+          <div class="action-buttons">
+            <a href="index.html" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Volver al Inicio
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2025 Smart Site Company. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+      // Funcionalidad de las pestañas
+      const tabBtns = document.querySelectorAll(".tab-btn");
+      const tabContents = document.querySelectorAll(".tab-content");
+
+      tabBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const tabId = btn.getAttribute("data-tab");
+
+          // Remover clase active de todos los botones y contenidos
+          tabBtns.forEach((btn) => btn.classList.remove("active"));
+          tabContents.forEach((content) => content.classList.remove("active"));
+
+          // Agregar clase active al botón y contenido seleccionado
+          btn.classList.add("active");
+          document.getElementById(tabId).classList.add("active");
+        });
       });
-    });
 
-    // Funcionalidad original
-    document.getElementById('start-btn').addEventListener('click', function() {
-      startIdentification();
-      this.disabled = true;
-      document.getElementById('stop-btn').disabled = false;
-      this.classList.add('active');
-    });
-    
-    document.getElementById('stop-btn').addEventListener('click', function() {
-      stopIdentification();
-      this.disabled = true;
-      document.getElementById('start-btn').disabled = false;
-      document.getElementById('start-btn').classList.remove('active');
-    });
-    
-    function simulateProcessing(element) {
-      element.innerHTML = '<span class="loading"></span> Procesando imagen...';
-      setTimeout(() => {
-        element.innerHTML = '<span class="status-badge status-success"><i class="fas fa-check-circle"></i> Identificación completada</span>';
-      }, 2000);
-    }
-    
-    document.getElementById('upload-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const resultElement = document.getElementById('upload-result');
-      simulateProcessing(resultElement);
-    });
+      // Funcionalidad original
+      document
+        .getElementById("start-btn")
+        .addEventListener("click", function () {
+          startIdentification();
+          this.disabled = true;
+          document.getElementById("stop-btn").disabled = false;
+          this.classList.add("active");
+        });
 
-    // Efectos para botones
-    document.querySelectorAll('.btn').forEach(button => {
-      // Efecto de onda al hacer clic
-      button.addEventListener('click', function(e) {
-        if(this.classList.contains('file-input')) return;
-        
-        const x = e.clientX - e.target.getBoundingClientRect().left;
-        const y = e.clientY - e.target.getBoundingClientRect().top;
-        
-        const ripple = document.createElement('span');
-        ripple.classList.add('ripple');
-        ripple.style.left = `${x}px`;
-        ripple.style.top = `${y}px`;
-        
-        this.appendChild(ripple);
-        
+      document
+        .getElementById("stop-btn")
+        .addEventListener("click", function () {
+          stopIdentification();
+          this.disabled = true;
+          document.getElementById("start-btn").disabled = false;
+          document.getElementById("start-btn").classList.remove("active");
+        });
+
+      function simulateProcessing(element) {
+        element.innerHTML =
+          '<span class="loading"></span> Procesando imagen...';
         setTimeout(() => {
-          ripple.remove();
-        }, 1000);
+          element.innerHTML =
+            '<span class="status-badge status-success"><i class="fas fa-check-circle"></i> Identificación completada</span>';
+        }, 2000);
+      }
+
+      document
+        .getElementById("upload-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const resultElement = document.getElementById("upload-result");
+          simulateProcessing(resultElement);
+        });
+
+      // Efectos para botones
+      document.querySelectorAll(".btn").forEach((button) => {
+        // Efecto de onda al hacer clic
+        button.addEventListener("click", function (e) {
+          if (this.classList.contains("file-input")) return;
+
+          const x = e.clientX - e.target.getBoundingClientRect().left;
+          const y = e.clientY - e.target.getBoundingClientRect().top;
+
+          const ripple = document.createElement("span");
+          ripple.classList.add("ripple");
+          ripple.style.left = `${x}px`;
+          ripple.style.top = `${y}px`;
+
+          this.appendChild(ripple);
+
+          setTimeout(() => {
+            ripple.remove();
+          }, 1000);
+        });
+
+        // Efecto de hover
+        button.addEventListener("mouseenter", () => {
+          button.style.transform = "translateY(-2px)";
+        });
+
+        button.addEventListener("mouseleave", () => {
+          button.style.transform = "translateY(0)";
+        });
       });
-      
-      // Efecto de hover
-      button.addEventListener('mouseenter', () => {
-        button.style.transform = 'translateY(-2px)';
-      });
-      
-      button.addEventListener('mouseleave', () => {
-        button.style.transform = 'translateY(0)';
-      });
-    });
-  </script>
-  <script src="identify.js"></script>
-  <script src="uploads.js"></script>
-</body>
+    </script>
+    <script src="identify.js"></script>
+    <script src="uploads.js"></script>
+  </body>
 </html>

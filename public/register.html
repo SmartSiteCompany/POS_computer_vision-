@@ -1,148 +1,164 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sistema de Registro Facial</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="register.css">
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1><i class="fas fa-user-circle"></i> Sistema de Registro Facial Smart Site Copany</h1>
-      <p>Registre rostros mediante cámara web o subiendo una imagen</p>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Registro Facial</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="register.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>
+          <i class="fas fa-user-circle"></i> Sistema de Registro Facial Smart
+          Site Copany
+        </h1>
+        <p>Registre rostros mediante cámara web o subiendo una imagen</p>
+      </header>
 
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="camera-tab">
-        <i class="fas fa-camera"></i> Usar Cámara
-      </button>
-      <button class="tab-btn" data-tab="image-tab">
-        <i class="fas fa-image"></i> Subir Imagen
-      </button>
-    </div>
-
-    <div id="camera-tab" class="tab-content active">
-      <div class="video-container">
-        <video id="video" autoplay muted></video>
-        <canvas id="overlay"></canvas>
-      </div>
-      
-      <div class="btn-group">
-        <button onclick="register()" class="btn btn-primary">
-          <i class="fas fa-save"></i> Registrar Rostro
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="camera-tab">
+          <i class="fas fa-camera"></i> Usar Cámara
         </button>
-        <a href="index.html" class="btn btn-secondary">
-          <i class="fas fa-arrow-left"></i> Volver al Inicio
-        </a>
+        <button class="tab-btn" data-tab="image-tab">
+          <i class="fas fa-image"></i> Subir Imagen
+        </button>
       </div>
-    </div>
-     
-    <div id="image-tab" class="tab-content">
-      <form id="register-form" method="POST" enctype="multipart/form-data">
-        <div class="form-group file-upload-wrapper">
-          <label class="file-upload-label btn-primary">
-            <i class="fas fa-upload"></i> Seleccionar imagen
-            <input type="file" id="image-upload" name="image" accept="image/*" required />
-          </label>
-          <span id="file-name" class="file-name"></span>
+
+      <div id="camera-tab" class="tab-content active">
+        <div class="video-container">
+          <video id="video" autoplay muted></video>
+          <canvas id="overlay"></canvas>
         </div>
-        
+
         <div class="btn-group">
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-check-circle"></i> Registrar Rostro
+          <button onclick="register()" class="btn btn-primary">
+            <i class="fas fa-save"></i> Registrar Rostro
           </button>
           <a href="index.html" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Volver al Inicio
           </a>
         </div>
-      </form>
-      
-      <div id="register-result" style="display: none;"></div>
-      <img id="register-preview" style="display: none;" />
-      
-      <h3 style="margin-top: 2rem; color: var(--primary-color);">
-        <i class="fas fa-list"></i> Rostros Registrados
-      </h3>
-      <ul id="register-list"></ul>
+      </div>
+
+      <div id="image-tab" class="tab-content">
+        <form id="register-form" method="POST" enctype="multipart/form-data">
+          <div class="form-group file-upload-wrapper">
+            <label class="file-upload-label btn-primary">
+              <i class="fas fa-upload"></i> Seleccionar imagen
+              <input
+                type="file"
+                id="image-upload"
+                name="image"
+                accept="image/*"
+                required
+              />
+            </label>
+            <span id="file-name" class="file-name"></span>
+          </div>
+
+          <div class="btn-group">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-check-circle"></i> Registrar Rostro
+            </button>
+            <a href="index.html" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Volver al Inicio
+            </a>
+          </div>
+        </form>
+
+        <div id="register-result" style="display: none"></div>
+        <img id="register-preview" style="display: none" />
+
+        <h3 style="margin-top: 2rem; color: var(--primary-color)">
+          <i class="fas fa-list"></i> Rostros Registrados
+        </h3>
+        <ul id="register-list"></ul>
+      </div>
     </div>
-  </div>
 
-  <footer>
-    <p> © 2025 Smart Site Company. Todos los derechos reservados.</p>
-  </footer>
+    <footer>
+      <p>© 2025 Smart Site Company. Todos los derechos reservados.</p>
+    </footer>
 
-  <script>
-    // Script para manejar las pestañas
-    document.addEventListener('DOMContentLoaded', function() {
-      const tabBtns = document.querySelectorAll('.tab-btn');
-      
-      tabBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-          const tabId = this.getAttribute('data-tab');
-          
-          // Remover clase active de todos los botones y contenidos
-          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-          
-          // Agregar clase active al botón y contenido seleccionado
-          this.classList.add('active');
-          document.getElementById(tabId).classList.add('active');
+    <script>
+      // Script para manejar las pestañas
+      document.addEventListener("DOMContentLoaded", function () {
+        const tabBtns = document.querySelectorAll(".tab-btn");
+
+        tabBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const tabId = this.getAttribute("data-tab");
+
+            // Remover clase active de todos los botones y contenidos
+            document
+              .querySelectorAll(".tab-btn")
+              .forEach((b) => b.classList.remove("active"));
+            document
+              .querySelectorAll(".tab-content")
+              .forEach((c) => c.classList.remove("active"));
+
+            // Agregar clase active al botón y contenido seleccionado
+            this.classList.add("active");
+            document.getElementById(tabId).classList.add("active");
+          });
         });
-      });
-      
-      // Mostrar vista previa de la imagen seleccionada
-      const imageUpload = document.getElementById('image-upload');
-      if(imageUpload) {
-        imageUpload.addEventListener('change', function(e) {
-          const file = e.target.files[0];
-          if(file) {
-            document.getElementById('file-name').textContent = file.name;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-              const preview = document.getElementById('register-preview');
-              preview.src = event.target.result;
-              preview.style.display = 'block';
+
+        // Mostrar vista previa de la imagen seleccionada
+        const imageUpload = document.getElementById("image-upload");
+        if (imageUpload) {
+          imageUpload.addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (file) {
+              document.getElementById("file-name").textContent = file.name;
+              const reader = new FileReader();
+              reader.onload = function (event) {
+                const preview = document.getElementById("register-preview");
+                preview.src = event.target.result;
+                preview.style.display = "block";
+              };
+              reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(file);
-          }
-        });
-      }
+          });
+        }
 
-      // Efectos para botones
-      document.querySelectorAll('.btn').forEach(button => {
-        // Efecto de onda al hacer clic
-        button.addEventListener('click', function(e) {
-          const x = e.clientX - e.target.getBoundingClientRect().left;
-          const y = e.clientY - e.target.getBoundingClientRect().top;
-          
-          const ripple = document.createElement('span');
-          ripple.classList.add('ripple');
-          ripple.style.left = `${x}px`;
-          ripple.style.top = `${y}px`;
-          
-          this.appendChild(ripple);
-          
-          setTimeout(() => {
-            ripple.remove();
-          }, 1000);
-        });
-        
-        // Efecto de hover
-        button.addEventListener('mouseenter', () => {
-          button.style.transform = 'translateY(-3px)';
-        });
-        
-        button.addEventListener('mouseleave', () => {
-          button.style.transform = 'translateY(0)';
+        // Efectos para botones
+        document.querySelectorAll(".btn").forEach((button) => {
+          // Efecto de onda al hacer clic
+          button.addEventListener("click", function (e) {
+            const x = e.clientX - e.target.getBoundingClientRect().left;
+            const y = e.clientY - e.target.getBoundingClientRect().top;
+
+            const ripple = document.createElement("span");
+            ripple.classList.add("ripple");
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+              ripple.remove();
+            }, 1000);
+          });
+
+          // Efecto de hover
+          button.addEventListener("mouseenter", () => {
+            button.style.transform = "translateY(-3px)";
+          });
+
+          button.addEventListener("mouseleave", () => {
+            button.style.transform = "translateY(0)";
+          });
         });
       });
-    });
 
-    // Aquí irían las funciones de register() y demás lógica de tu aplicación
-  </script>
-  <script src="script.js"></script>
-  <script src="register.js"></script>
-</body>
+      // Aquí irían las funciones de register() y demás lógica de tu aplicación
+    </script>
+    <script src="script.js"></script>
+    <script src="register.js"></script>
+  </body>
 </html>
