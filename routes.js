@@ -521,8 +521,9 @@ router.post("/login", async (req, res) => {
 
 
 
-//---------------------------Rutas de los crud------------------------------------------------------------
+//---------------------------Rutas Cruds------------------------------------------------------------
 
+//-----------------------Crud de usuarios------------------------------------------------------------
 router.get("/users", async (req, res) => {
   try {
     const users = await User.find({}, { encoding: 0 }).sort({ createdAt: -1 }); // ocultar el campo encoding
@@ -532,8 +533,6 @@ router.get("/users", async (req, res) => {
     res.status(500).json({ error: "Error al obtener registros" });
   }
 });
-
-
 
 router.delete("/users/:id", async (req, res) => {
   try {
@@ -571,6 +570,57 @@ router.put("/users/:id", async (req, res) => {
     res.json({ success: true, message: "Registro actualizado", user: result });
   } catch (err) {
     console.error("Error al actualizar usuario:", err);
+    res.status(500).json({ error: "Error al actualizar registro" });
+  }
+});
+
+
+//-----------------------Crud de cajeros------------------------------------------------------------
+router.get("/cajeros", async (req, res) => {
+  try {
+    const cajeros = await Cajero.find({}, { encoding: 0 }).sort({ createdAt: -1 }); // ocultar el campo encoding
+    res.json({ success: true, cajeros });
+  } catch (err) {
+    console.error("Error al obtener cajeros:", err);
+    res.status(500).json({ error: "Error al obtener registros" });
+  }
+});
+
+router.delete("/cajeros/:id", async (req, res) => {
+  try {
+    const result = await Cajero.findByIdAndDelete(req.params.id);
+    if (!result) {
+      return res.status(404).json({ error: "Registro no encontrado" });
+    }
+    res.json({ success: true, message: "Registro eliminado" });
+  } catch (err) {
+    console.error("Error al eliminar cajero:", err);
+    res.status(500).json({ error: "Error al eliminar registro" });
+  }
+});
+
+router.put("/cajeros/:id", async (req, res) => {
+  try {
+    const { timestamp } = req.body;
+    const parsedDate = new Date(timestamp);
+
+    if (isNaN(parsedDate.getTime())) {
+      return res.status(400).json({ error: "Fecha inválida" });
+    }
+
+    const result = await Cajero.findByIdAndUpdate(
+      req.params.id,
+      { createdAt: parsedDate },
+      { new: true }
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: "Registro no encontrado" });
+    }
+
+    res.json({ success: true, message: "Registro actualizado", cajero: result });
+  } catch (err) {
+    console.error("Error al actualizar cajero:", err);
     res.status(500).json({ error: "Error al actualizar registro" });
   }
 });
