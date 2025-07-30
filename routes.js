@@ -3,12 +3,12 @@ const router = express.Router();
 const faceapi = require("@vladmandic/face-api");
 const fs = require("fs");
 const path = require("path");
-//const db = require("./models/db");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" }); // carpeta temporal
 const canvas = require("canvas");
 const mongoose = require ("mongoose");
 const User = require ('./models/User.js');
+const Cajero = require ('./models/Cajero.js');
 const { createCanvas, Image, loadImage } = require ("canvas");
 
 faceapi.env.monkeyPatch({ Canvas: canvas.Canvas, Image, ImageData: canvas.ImageData});
@@ -27,35 +27,6 @@ async function loadModels() {
   }
 }
 
-// Función para cargar encodings desde la base de datos
-/*function loadEncodingsFromDB() {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT id, encoding FROM users', [], (err, rows) => {
-      if (err) return reject(err);
-      const encodings = rows.map(row => ({
-        id: row.id,
-        descriptor: JSON.parse(row.encoding)
-      }));
-      resolve(encodings);
-    });
-  });
-}*/
-
-// Función para guardar un nuevo encoding 
-/*function saveEncodingToDB(descriptor) {
-  return new Promise((resolve, reject) => {
-    const descriptorStr = JSON.stringify(Array.from(descriptor));
-    db.run(
-      'INSERT INTO users (encoding) VALUES (?)',
-      [descriptorStr],
-      function (err) {
-        if (err) return reject(err);
-        resolve(this.lastID);
-      }
-    );
-  });
-}*/
-
 // Función para cargar un encoding desde mongodb
 async function loadEncodingsFromMongodb() {
   const users = await User.find({});
@@ -65,6 +36,14 @@ async function loadEncodingsFromMongodb() {
   }));
 }
 
+// Función para cargar un encoding para cajero
+async function loadEncodingsForCajeros() {
+  const cajeros = await Cajero.find({});
+  return cajeros.map((cajero) => ({
+    id: cajero._id.toString(),
+    descriptor: cajero.encoding,
+  }));
+}
 
 // Función para guardar un encoding desde mongodb
 async function saveEncodingToMongodb(descriptor) {
@@ -73,6 +52,12 @@ async function saveEncodingToMongodb(descriptor) {
   return saved._id.toString();
 }
 
+// Función para guardar un encoding para cajero
+async function saveEncodingToCajero(descriptor) {
+  const newCajero = new Cajero({ encoding: Array.from(descriptor) });
+  const saved = await newCajero.save();
+  return saved._id.toString();
+}
 
 
 // Convertir base64 a tensor
@@ -400,6 +385,140 @@ router.post("/register-image", upload.single("image"), async (req, res) => {
   }
 });
 
+
+// Ruta POST /register solo para cajeros
+router.post("/register", async (req, res) => {
+  try {
+    await loadModels();
+    const { image } = req.body;
+    if (!image) throw new Error("Imagen no proporcionada");
+
+    const buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
+    const img = await loadImage(buffer);
+    const canvasBase = createCanvas(img.width, img.height);
+    const ctx = canvasBase.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+
+    const detections = await faceapi
+      .detectAllFaces(canvasBase)
+      .withFaceLandmarks()
+      .withFaceDescriptors();
+
+    if (!detections.length) {
+      return res.json({ success: false, message: "No se detectaron rostros." });
+    }
+
+    const knownEncodings = await loadEncodingsForCajeros();
+    let registered = 0;
+    let duplicated = 0;
+    const faces = [];
+
+    for (let i = 0; i < detections.length; i++) {
+      const { descriptor, detection } = detections[i];
+      const { x, y, width, height } = detection.box;
+
+      let isDuplicate = false;
+      for (const cajero of knownEncodings) {
+        const storedDescriptor = new Float32Array(cajero.descriptor);
+        const distance = faceapi.euclideanDistance(descriptor, storedDescriptor);
+        if (distance < 0.5) {
+          isDuplicate = true;
+          break;
+        }
+      }
+
+      const color = generateColor(i, detections.length);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, width, height);
+
+      faces.push({ box: detection.box, color, isDuplicate });
+
+      if (isDuplicate) {
+        duplicated++;
+        continue;
+      }
+
+      const newCajero = new Cajero({ encoding: Array.from(descriptor) });
+      const saved = await newCajero.save();
+      const id = saved._id.toString();
+
+      // Guardar imagen opcional
+      const faceCanvas = createCanvas(width, height);
+      const faceCtx = faceCanvas.getContext("2d");
+      faceCtx.drawImage(canvasBase, x, y, width, height, 0, 0, width, height);
+
+      const datasetDir = path.join(__dirname, "dataset");
+      if (!fs.existsSync(datasetDir)) {
+        fs.mkdirSync(datasetDir, { recursive: true });
+      }
+
+      const facePath = path.join(datasetDir, `cajero_${id}.jpg`);
+      fs.writeFileSync(facePath, faceCanvas.toBuffer("image/jpeg"));
+
+      registered++;
+    }
+
+    const finalImage = canvasBase.toDataURL("image/jpeg");
+
+    return res.json({
+      success: true,
+      message: `${registered} rostro(s) registrado(s), ${duplicated} duplicado(s).`,
+      faces,
+      image: finalImage,
+    });
+  } catch (err) {
+    console.error("Error en /register:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
+// Ruta para login por reconocimiento facial
+
+router.post("/login", async (req, res) => {
+  try {
+    await loadModels();
+    const { image } = req.body;
+
+    const descriptor = await getDescriptorFromBase64(image);
+    const encodings = await loadEncodingsForCajeros();
+
+    let bestMatchId = null;
+    let bestDistance = 1;
+
+    encodings.forEach((cajero) => {
+      const storedDescriptor = new Float32Array(cajero.descriptor);
+      const dist = faceapi.euclideanDistance(descriptor, storedDescriptor);
+      if (dist < bestDistance) {
+        bestDistance = dist;
+        bestMatchId = cajero.id; // devolvemos el ID
+      }
+    });
+
+    if (bestDistance < 0.5) {
+      res.json({
+        success: true,
+        message: "Acceso concedido",
+        id: bestMatchId, // ID del cajero
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        message: "Rostro no reconocido",
+      });
+    }
+  } catch (err) {
+    console.error("Error en /login:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+	
+
+
+
+
+//---------------------------Rutas de los crud------------------------------------------------------------
 
 router.get("/users", async (req, res) => {
   try {

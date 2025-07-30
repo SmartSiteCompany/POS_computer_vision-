@@ -24,11 +24,6 @@ async function getFaceDescriptor(imagePath) {
   return detections ? detections.descriptor : null;
 }
 
-/*function compareFaces(queryDescriptor, storedDescriptor) {
-  const distance = faceapi.euclideanDistance(queryDescriptor, storedDescriptor);
-  return distance < 0.6; // Umbral de similitud
-}*/
-
 function compareFaces(queryDescriptor, storedDescriptor) {
     const storedArray = Object.values(storedDescriptor); // <-- conversión clave
     const distance = faceapi.euclideanDistance(queryDescriptor, storedArray);
