@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Administración de Usuarios</title>
+    <title>Administración de Cajeros</title>
     <link rel="stylesheet" href="crud.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
@@ -15,27 +15,27 @@
     />
   </head>
 
-  <div id="updateModal" class="modal" style="display: none">
-    <div class="modal-content">
-      <h3>Actualizar Fecha de Registro</h3>
-      <input type="datetime-local" id="newDateInput" />
-      <div style="margin-top: 10px">
-        <button class="btn btn-success" onclick="confirmUpdate()">
-          Actualizar
-        </button>
-        <button class="btn btn-secondary" onclick="closeModal()">
-          Cancelar
-        </button>
+  <body>
+    <!-- Modal para actualizar cajero -->
+    <div id="updateModalCajero" class="modal" style="display: none">
+      <div class="modal-content">
+        <h3>Actualizar Fecha de Registro</h3>
+        <input type="datetime-local" id="newDateInputCajero" />
+        <div style="margin-top: 10px">
+          <button class="btn btn-success" onclick="confirmUpdateCajero()">
+            Actualizar
+          </button>
+          <button class="btn btn-secondary" onclick="closeModalCajero()">
+            Cancelar
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <body>
     <div class="container">
       <header class="header">
         <h1>
-          <i class="fas fa-users-cog"></i> Administración de Cajeros Smart Site
-          Company
+          <i class="fas fa-user-tie"></i> Administración de Cajeros - Smart Site Company
         </h1>
         <button class="btn btn-primary" onclick="loadCajeros()">
           <i class="fas fa-sync-alt"></i> Cargar Cajeros
@@ -45,9 +45,10 @@
           <i class="fas fa-arrow-left"></i> Volver al Inicio
         </a>
       </header>
+
       <div class="card table-container">
         <h2><i class="fas fa-list"></i> Lista de Cajeros</h2>
-        <table id="usersTable" class="data-table">
+        <table id="cajerosTable" class="data-table">
           <thead>
             <tr>
               <th>ID</th>
@@ -59,9 +60,11 @@
         </table>
       </div>
     </div>
+
     <footer class="footer">
       <p>© 2025 Smart Site Company. Todos los derechos reservados.</p>
     </footer>
+
     <script src="crudCajeros.js"></script>
   </body>
 </html>
