@@ -5,10 +5,15 @@ const path = require("path");
 //const db = require('./models/db');
 const conectMongo = require('./models/mongo');
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "registerCajero.html"));
+});
+
 app.use(express.static("public"));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.static(path.join(__dirname, "public"))); // Servir HTML, JS, etc.
 app.use(express.static(path.join(__dirname, "public")));
+
 
 app.use("/", routes);
 

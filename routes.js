@@ -387,7 +387,7 @@ router.post("/register-image", upload.single("image"), async (req, res) => {
 
 
 // Ruta POST /register solo para cajeros
-router.post("/register", async (req, res) => {
+router.post("/register-cajero", async (req, res) => {
   try {
     await loadModels();
     const { image } = req.body;
@@ -439,6 +439,9 @@ router.post("/register", async (req, res) => {
         continue;
       }
 
+      const descriptorArray = Array.from(descriptor);
+
+      
       const newCajero = new Cajero({ encoding: Array.from(descriptor) });
       const saved = await newCajero.save();
       const id = saved._id.toString();
