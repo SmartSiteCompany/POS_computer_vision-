@@ -89,6 +89,8 @@ function showResultsWithCanvas(recognized) {
   });
 }
 
+let lastSentId = null;
+
 async function identify() {
   const base64Image = getBase64Image();
 
@@ -104,14 +106,25 @@ async function identify() {
     if (data.success && Array.isArray(data.recognized)) {
       if (data.recognized[0]?.box) {
         showResultsWithCanvas(data.recognized);
-      } else {
-        
-        resultsDiv.innerHTML = "";
-        data.recognized.forEach((id) => {
-          const p = document.createElement("p");
-          p.textContent = id;
-          resultsDiv.appendChild(p);
-        });
+
+        // Extraer ID
+        const label = data.recognized[0].label;
+        if (label.startsWith("ID:")) {
+          const userId = label.replace("ID:", "").trim();
+
+          // Solo guardar si es distinto al último enviado
+          if (userId !== lastSentId) {
+            lastSentId = userId;
+            console.log(`Identificado usuario: ${userId}`);
+
+            // Enviar al backend para guardar
+            await fetch("/save-identification", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId }),
+            });
+          }
+        }
       }
     } else {
       resultsDiv.innerText = "Error en identificación.";

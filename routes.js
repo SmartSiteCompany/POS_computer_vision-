@@ -234,6 +234,38 @@ router.post("/identify", async (req, res) => {
 });
 
 
+// Ruta para guardar la identificación del usuario en json
+router.post("/save-identification", async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "userId no proporcionado" });
+    }
+
+    const outputDir = path.join(__dirname, "../logs");
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir);
+    }
+
+    const timestamp = new Date().toISOString().replace(/:/g, "-");
+    const filePath = path.join(outputDir, `identification-${userId}-${timestamp}.json`);
+
+    const dataToSave = {
+      userId,
+      timestamp: new Date().toISOString(),
+    };
+
+    fs.writeFileSync(filePath, JSON.stringify(dataToSave, null, 2));
+
+    return res.json({ success: true, message: "Identificación guardada." });
+  } catch (err) {
+    console.error("Error al guardar identificación:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 function generateColor(index, total) {
   const hue = Math.floor((360 / total) * index); // divide el círculo cromático
   return `hsl(${hue}, 100%, 50%)`; // saturación y brillo fijos para visibilidad
