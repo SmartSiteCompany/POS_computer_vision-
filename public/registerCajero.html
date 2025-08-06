@@ -2,33 +2,44 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registro Facial Cajero</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="registercajero.css" />
-    
   </head>
   <body>
     <div class="container">
       <header>
-        <h1><i class="fas fa-user-lock"></i> Registro de Cajeros</h1>
+        <h1>
+          <i class="fas fa-user-lock"></i> Registro de Cajeros Smart Site Company
+        </h1>
         <p>Captura el rostro del cajero mediante cámara</p>
       </header>
 
-      <div class="video-container">
-        <video id="video" autoplay muted></video>
-        <canvas id="overlay"></canvas>
+      <!-- Añadí las pestañas para mantener la estructura aunque solo usemos una -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="camera-tab">
+          <i class="fas fa-camera"></i> Usar Cámara
+        </button>
       </div>
 
-      <div class="btn-group">
-        <button onclick="registerCajero()" class="btn btn-primary">
-          <i class="fas fa-save"></i> Registrar Cajero
-        </button>
-        <a href="login.html" class="btn btn-secondary">
-          <i class="fas fa-arrow-left"></i> Iniciar Sesión
-        </a>
+      <div id="camera-tab" class="tab-content active">
+        <div class="video-container">
+          <video id="video" autoplay muted></video>
+          <canvas id="overlay"></canvas>
+        </div>
+
+        <div class="btn-group">
+          <button onclick="registerCajero()" class="btn btn-primary">
+            <i class="fas fa-save"></i> Registrar Cajero
+          </button>
+          <a href="login.html" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Iniciar Sesión
+          </a>
+        </div>
       </div>
     </div>
 
@@ -36,6 +47,39 @@
       <p>© 2025 Smart Site Company. Todos los derechos reservados.</p>
     </footer>
 
+    <script>
+      // Script para manejar efectos (opcional, si no está en tu CSS)
+      document.addEventListener("DOMContentLoaded", function () {
+        // Efectos para botones
+        document.querySelectorAll(".btn").forEach((button) => {
+          // Efecto de onda al hacer clic
+          button.addEventListener("click", function (e) {
+            const x = e.clientX - e.target.getBoundingClientRect().left;
+            const y = e.clientY - e.target.getBoundingClientRect().top;
+
+            const ripple = document.createElement("span");
+            ripple.classList.add("ripple");
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+              ripple.remove();
+            }, 1000);
+          });
+
+          // Efecto de hover
+          button.addEventListener("mouseenter", () => {
+            button.style.transform = "translateY(-3px)";
+          });
+
+          button.addEventListener("mouseleave", () => {
+            button.style.transform = "translateY(0)";
+          });
+        });
+      });
+    </script>
     <script src="registerCajero.js"></script>
   </body>
 </html>

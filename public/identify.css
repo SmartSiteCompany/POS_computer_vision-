@@ -3,12 +3,13 @@
   --primary-light: #3b8eed;
   --secondary-color: #2196f3;
   --accent-color: #3498db;
-  --light-color: #ecf0f1;
-  --dark-color: #2c3e50;
+  --light-color: #f7f8f8;
+  --dark-color: #b0b0b0;
   --success-color: #27ae60;
-  --border-radius: 6px;
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --border-radius: 0;
+  --box-shadow: 0 4px 12px rgb(192, 190, 196);
   --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --button-effect-color: #1AAB8A;
 }
 
 * {
@@ -25,14 +26,14 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+ max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
   width: 100%;
 }
 
 header {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+ background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
   color: white;
   padding: 1.5rem 0;
   text-align: center;
@@ -44,13 +45,11 @@ h1 {
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
-
 .subtitle {
   font-weight: 300;
   opacity: 0.9;
 }
-
-/* --- Estilos para botones profesionales --- */
+/* --- Estilos para botones con el nuevo efecto --- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -58,19 +57,16 @@ h1 {
   gap: 0.75rem;
   color: white;
   border: none;
-  padding: 0.85rem 2rem;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 0.95rem;
-  transition: var(--transition);
-  text-decoration: none;
   position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  min-width: 200px;
-  text-align: center;
-  margin: 0.5rem auto;
+  height: 60px;
+  font-size: 1.1em;
+  padding: 0 2em;
+  cursor: pointer;
+  transition: 800ms ease all;
+  outline: none;
+  text-decoration: none;
+  min-width: 220px;
+  margin: 0.5rem;
   border: 1px solid rgba(0,0,0,0.1);
 }
 
@@ -78,119 +74,65 @@ h1 {
   font-size: 0.9rem;
 }
 
-.btn::before {
+/* Efecto de bordes animados */
+.btn:before, .btn:after {
   content: '';
   position: absolute;
   top: 0;
+  right: 0;
+  height: 2px;
+  width: 0;
+  background: var(--button-effect-color);
+  transition: 400ms ease all;
+}
+
+.btn:after {
+  right: inherit;
+  top: inherit;
   left: 0;
+  bottom: 0;
+}
+
+.btn:hover:before, .btn:hover:after {
   width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.15) 50%, transparent 75%);
-  background-size: 400% 400%;
-  z-index: 0;
-  opacity: 0;
-  transition: all 0.6s ease;
+  transition: 800ms ease all;
 }
 
+/* Estilos hover para todos los botones */
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.btn:hover::before {
-  opacity: 1;
-  animation: shine 1.5s infinite;
-}
-
-.btn:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-@keyframes shine {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  background: white;
+  color: var(--button-effect-color);
 }
 
 /* Botón primario */
 .btn-primary {
-  background-color: var(--primary-color);
-  background: linear-gradient(to right, var(--primary-color), var(--primary-light));
+  background: var(--primary-color);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(to right, var(--primary-light), var(--primary-color));
+  color: var(--primary-color);
 }
 
-/* Botón secundario */
-.btn-secondary {
-  background-color: var(--secondary-color);
-  background: linear-gradient(to right, #318ce7, #0cb7f2);
-}
-
-.btn-secondary:hover {
-  background: linear-gradient(to right, #318ce7, #0cb7f2);
-}
-
-/* Efecto ripple */
-.ripple {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  transform: scale(0);
-  animation: ripple 0.6s linear;
-  pointer-events: none;
-}
-
-@keyframes ripple {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
-/* Efecto de pulso */
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(44, 62, 80, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(44, 62, 80, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(44, 62, 80, 0);
-  }
-}
-
-.pulse {
-  animation: pulse 2s infinite;
+.btn-primary:before, 
+.btn-primary:after {
+  background: var(--primary-color);
 }
 
 /* Contenedor de botones */
-.action-buttons {
+.btn-group {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+  gap: 1rem;
+  width: 100%;
 }
 
 /* --- Estilos para pestañas --- */
-.tabs-container {
-  margin-bottom: 2rem;
-}
-
-.tabs-wrapper {
+.tabs {
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;
-}
-
-.tabs {
-  display: flex;
   border-bottom: 2px solid var(--light-color);
 }
 
@@ -241,6 +183,11 @@ h1 {
 
 .tab-content {
   display: none;
+  background: white;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin-bottom: 2rem;
 }
 
 .tab-content.active {
@@ -249,133 +196,175 @@ h1 {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Estilos para las tarjetas */
-.card {
-  background: white;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  padding: 2rem;
-  transition: var(--transition);
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.card:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Video y detección */
-.video-wrapper {
+.video-container {
   position: relative;
   width: 100%;
   max-width: 600px;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto 2rem;
   border-radius: var(--border-radius);
   overflow: hidden;
   box-shadow: var(--box-shadow);
-  background: #000;
-  aspect-ratio: 4/3;
 }
 
-video, canvas {
+#video {
+  width: 100%;
+  display: block;
+  background: var(--dark-color);
+}
+
+#overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }
 
-#results {
-  background: var(--light-color);
-  padding: 1rem;
-  border-radius: var(--border-radius);
-  margin: 1.5rem auto;
-  min-height: 60px;
-  width: 100%;
-  max-width: 600px;
-}
-
-/* Controles de imagen */
-.image-preview-container {
-  margin: 1.5rem 0;
+/* Formulario y carga de archivos */
+.form-group {
+  margin-bottom: 1.5rem;
   text-align: center;
 }
 
-#preview {
-  max-width: 100%;
-  max-height: 400px;
-  border-radius: var(--border-radius);
-  display: none;
-  margin: 0 auto;
-  box-shadow: var(--box-shadow);
-}
-
-.upload-section {
+.file-upload-wrapper {
+  position: relative;
+  margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
 }
 
-.file-input-container {
+.file-upload-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: white;
+  border: none;
   position: relative;
-  display: inline-block;
-}
-
-.file-input {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  opacity: 0;
+  height: 60px;
+  font-size: 1.1em;
+  padding: 0 2em;
   cursor: pointer;
+  transition: 800ms ease all;
+  outline: none;
+  min-width: 220px;
+  margin: 0.5rem;
+  background: var(--primary-color);
 }
 
-/* Estados y mensajes */
-.status-message {
-  color: #666;
+.file-upload-label:before, 
+.file-upload-label:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 2px;
+  width: 0;
+  background: var(--primary-color);
+  transition: 400ms ease all;
+}
+
+.file-upload-label:after {
+  right: inherit;
+  top: inherit;
+  left: 0;
+  bottom: 0;
+}
+
+.file-upload-label:hover:before, 
+.file-upload-label:hover:after {
+  width: 100%;
+  transition: 800ms ease all;
+}
+
+.file-upload-label:hover {
+  background: white;
+  color: var(--primary-color);
+}
+
+.file-name {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--dark-color);
   font-style: italic;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+/* Vista previa y resultados */
+#register-preview {
+  max-width: 100%;
+  height: auto;
+  margin: 1rem auto;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  display: none;
+}
+
+#register-result {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: var(--border-radius);
   text-align: center;
+  font-weight: 500;
 }
 
-.status-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.status-success {
+.success {
   background-color: rgba(39, 174, 96, 0.2);
   color: var(--success-color);
 }
 
-.loading {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255,255,255,.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s ease-in-out infinite;
+.error {
+  background-color: #ffeb3333;
+  color: #ff3333;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* Lista de registros */
+#register-list {
+  list-style-type: none;
+}
+
+#register-list li {
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  background: var(--light-color);
+  border-radius: var(--border-radius);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.status-active {
+  background-color: var(--success-color);
+}
+
+.status-inactive {
+  background-color: #ffcc00;
 }
 
 /* Footer */
 footer {
   text-align: center;
   margin-top: 3rem;
-  padding: 1.5rem;
-  color: #7f8c8d;
+  padding: 1rem;
+  color: #666;
   font-size: 0.9rem;
 }
 
@@ -385,26 +374,26 @@ footer {
     padding: 1rem;
   }
   
+  h1 {
+    font-size: 1.5rem;
+  }
+  
   .tabs {
     flex-direction: column;
   }
   
   .tab-btn {
     justify-content: center;
-    padding: 0.75rem;
-    border-bottom: 1px solid #eee;
+    padding: 0.8rem;
   }
   
-  .tab-btn.active::after {
-    display: none;
+  .btn-group {
+    flex-direction: column;
+    align-items: center;
   }
   
-  .card {
-    padding: 1.5rem;
-  }
-  
-  .btn {
+  .btn, .file-upload-label {
     width: 100%;
-    max-width: 100%;
+    min-width: 100%;
   }
-} 
+}

@@ -39,52 +39,49 @@
           <button onclick="register()" class="btn btn-primary">
             <i class="fas fa-save"></i> Registrar Rostro
           </button>
-          <a href="index.html" class="btn btn-secondary">
+          <a href="index.html" class="btn btn-primary">
             <i class="fas fa-arrow-left"></i> Volver al Inicio
           </a>
         </div>
       </div>
 
       <div id="image-tab" class="tab-content">
-        <form id="register-form" method="POST" enctype="multipart/form-data">
-          <div class="form-group file-upload-wrapper">
-            <label class="file-upload-label btn-primary">
-              <i class="fas fa-upload"></i> Seleccionar imagen
-              <input
-                type="file"
-                id="image-upload"
-                name="image"
-                accept="image/*"
-                required
-              />
-            </label>
-            <span id="file-name" class="file-name"></span>
-          </div>
+  <form id="register-form" method="POST" enctype="multipart/form-data">
+    <div class="form-group file-upload-wrapper">
+      <label class="file-upload-label btn btn-primary">
+        <i class="fas fa-upload"></i> Seleccionar imagen
+        <input
+          type="file"
+          id="image-upload"
+          name="image"
+          accept="image/*"
+          required
+        />
+      </label>
+      <span id="file-name" class="file-name"></span>
+    </div>
 
-          <div class="btn-group">
-            <button type="submit" class="btn btn-primary">
-              <i class="fas fa-check-circle"></i> Registrar Rostro
-            </button>
-            <button type="button" id="clear-button" class="btn btn-warning">
-              <i class="fas fa-eraser"></i> Limpiar
-            </button>
-            <a href="index.html" class="btn btn-secondary">
-              <i class="fas fa-arrow-left"></i> Volver al Inicio
-            </a>
-          </div>
-        </form>
+    <div class="btn-group">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-check-circle"></i> Registrar Rostro
+      </button>
+      <button type="button" id="clear-button" class="btn btn-primary">
+        <i class="fas fa-eraser"></i> Limpiar
+      </button>
+      <a href="index.html" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Volver al Inicio
+      </a>
+    </div>
+  </form>
 
-        <div
-          id="register-result"
-          style="display: none; font-weight: bold; margin-top: 1rem"
-        ></div>
-        <img id="register-preview" style="display: none" />
+  <div id="register-result" style="display: none; font-weight: bold; margin-top: 1rem"></div>
+  <img id="register-preview" style="display: none" />
 
-        <h3 style="margin-top: 2rem; color: var(--primary-color)">
-          <i class="fas fa-list"></i> Rostros Registrados
-        </h3>
-        <ul id="register-list"></ul>
-      </div>
+  <h3 style="margin-top: 2rem; color: var(--primary-color)">
+    <i class="fas fa-list"></i> Rostros Registrados
+  </h3>
+  <ul id="register-list"></ul>
+</div> 
     </div>
 
     <footer>
