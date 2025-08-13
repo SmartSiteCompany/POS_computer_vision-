@@ -40,10 +40,10 @@
         </div>
 
         <div class="btn-group">
-          <button id="start-btn" class="btn btn-primary pulse">
+          <button id="startBtn" class="btn btn-primary pulse">
             <i class="fas fa-play"></i> Iniciar Detección
           </button>
-          <button id="stop-btn" class="btn btn-primary" disabled>
+          <button id="stopBtn" class="btn btn-primary" disabled>
             <i class="fas fa-stop"></i> Detener Proceso
           </button>
           <a href="index.html" class="btn btn-primary">
@@ -138,25 +138,6 @@
           });
         }
 
-        // Funcionalidad original
-        document
-          .getElementById("start-btn")
-          .addEventListener("click", function () {
-            startIdentification();
-            this.disabled = true;
-            document.getElementById("stop-btn").disabled = false;
-            this.classList.add("active");
-          });
-
-        document
-          .getElementById("stop-btn")
-          .addEventListener("click", function () {
-            stopIdentification();
-            this.disabled = true;
-            document.getElementById("start-btn").disabled = false;
-            document.getElementById("start-btn").classList.remove("active");
-          });
-
         function simulateProcessing(element) {
           element.innerHTML =
             '<span class="loading"></span> Procesando imagen...';
@@ -208,5 +189,7 @@
     </script>
     <script src="identify.js"></script>
     <script src="uploads.js"></script>
+    <script src="/js/face-api.min.js"></script>
+    <script src="monitorCajero.js"></script>
   </body>
 </html>

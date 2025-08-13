@@ -27,13 +27,20 @@ async function loadModels() {
   }
 }
 
-// Función para cargar un encoding desde mongodb
+// Función para cargar un encoding de usuario desde mongodb
 async function loadEncodingsFromMongodb() {
   const users = await User.find({});
   return users.map((user) => ({
     id: user._id.toString(),
     descriptor: user.encoding,
   }));
+}
+
+// Función para guardar un encoding de usuario desde mongodb
+async function saveEncodingToMongodb(descriptor) {
+  const newUser = new User({ encoding: Array.from(descriptor) });
+  const saved = await newUser.save();
+  return saved._id.toString();
 }
 
 // Función para cargar un encoding para cajero
@@ -43,13 +50,6 @@ async function loadEncodingsForCajeros() {
     id: cajero._id.toString(),
     descriptor: cajero.encoding,
   }));
-}
-
-// Función para guardar un encoding desde mongodb
-async function saveEncodingToMongodb(descriptor) {
-  const newUser = new User({ encoding: Array.from(descriptor) });
-  const saved = await newUser.save();
-  return saved._id.toString();
 }
 
 // Función para guardar un encoding para cajero
@@ -243,7 +243,7 @@ router.post("/save-identification", async (req, res) => {
       return res.status(400).json({ success: false, message: "userId no proporcionado" });
     }
 
-    const outputDir = path.join(__dirname, "../logs");
+    const outputDir = "/home/dell/eq_vision_artificial/POS_computer_vision-/logs";
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir);
     }
@@ -509,6 +509,46 @@ router.post("/register-cajero", async (req, res) => {
 });
 
 
+// Ruta para monitorear cajero
+
+router.post("/monitor-cajero", async (req, res) => {
+  try {
+    await loadModels();
+    const { image } = req.body;
+
+    if (!req.session.cajeroId) {
+      return res.status(401).json({ success: false, message: "Sesión no activa" });
+    }
+
+    const buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
+    const tensor = faceapi.tf.node.decodeImage(buffer);
+
+    const detections = await faceapi
+      .detectAllFaces(tensor)
+      .withFaceLandmarks()
+      .withFaceDescriptors();
+
+    if (!detections || detections.length === 0) {
+      return res.json({ success: true, match: false });
+    }
+
+    const cajero = await Cajero.findById(req.session.cajeroId);
+    const storedDescriptor = new Float32Array(cajero.encoding);
+
+    const match = detections.some(det => {
+      const distance = faceapi.euclideanDistance(det.descriptor, storedDescriptor);
+      return distance < 0.5;
+    });
+
+    return res.json({ success: true, match });
+
+  } catch (err) {
+    console.error("Error en /monitor-cajero:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 // Ruta para login por reconocimiento facial
 
 router.post("/login", async (req, res) => {
@@ -527,30 +567,36 @@ router.post("/login", async (req, res) => {
       const dist = faceapi.euclideanDistance(descriptor, storedDescriptor);
       if (dist < bestDistance) {
         bestDistance = dist;
-        bestMatchId = cajero.id; // devolvemos el ID
+        bestMatchId = cajero.id;
       }
     });
 
     if (bestDistance < 0.5) {
+      // Guardar sesión
+      req.session.cajeroId = bestMatchId;
       res.json({
         success: true,
         message: "Acceso concedido",
-        id: bestMatchId, // ID del cajero
+        id: bestMatchId
       });
     } else {
-      res.status(401).json({
-        success: false,
-        message: "Rostro no reconocido",
-      });
+      res.status(401).json({ success: false, message: "Rostro no reconocido" });
     }
   } catch (err) {
     console.error("Error en /login:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
-	
 
 
+// Ruta para cerrar sesión
+router.post("/logout", (req, res) => {
+  req.session.destroy(err => {
+    if (err) return res.status(500).json({ error: "No se pudo cerrar sesión" });
+    res.clearCookie("connect.sid");
+    res.json({ success: true });
+  });
+});
 
 
 //---------------------------Rutas Cruds------------------------------------------------------------

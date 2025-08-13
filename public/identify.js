@@ -1,20 +1,14 @@
 const video = document.getElementById("video");
 const overlay = document.getElementById("overlay");
 const resultsDiv = document.getElementById("results");
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
 
+let stream = null;
 let intervalId = null;
-
-// Activar cámara con resolución adecuada
-navigator.mediaDevices.getUserMedia({
-  video: { width: { ideal: 640 }, height: { ideal: 480 } }
-})
-  .then((stream) => (video.srcObject = stream))
-  .catch((err) => console.error("Error al acceder a la cámara", err));
-
-// Cache de colores por ID
+let lastSentId = null;
 const colorCache = {};
 
-// Función determinista para generar color HSL único
 function generateColor(id) {
   let hash = 0;
   for (let i = 0; i < id.length; i++) {
@@ -31,22 +25,17 @@ function getColorForId(id) {
   return colorCache[id];
 }
 
-// Captura y preprocesamiento con filtro canvas
 function getBase64Image() {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
-
-  // Preprocesamiento visual
   ctx.filter = "brightness(1.05) contrast(1.15) blur(1px)";
   ctx.drawImage(video, 0, 0);
   ctx.filter = "none";
-
   return canvas.toDataURL("image/jpeg");
 }
 
-// Mostrar resultados en canvas
 function showResultsWithCanvas(recognized) {
   const ctx = overlay.getContext("2d");
   overlay.width = video.videoWidth;
@@ -59,28 +48,15 @@ function showResultsWithCanvas(recognized) {
     return;
   }
 
-  recognized.forEach((item) => {
-    const { label, box } = item;
-
-    let color;
-    if (label.startsWith("ID:")) {
-      const id = label.replace("ID: ", "").trim();
-      color = getColorForId(id);
-    } else {
-      color = "gray";
-    }
-
-    // Dibujar cuadro
+  recognized.forEach(({ label, box }) => {
+    const color = label.startsWith("ID:") ? getColorForId(label.replace("ID:", "").trim()) : "gray";
     ctx.strokeStyle = color;
     ctx.lineWidth = 3;
     ctx.strokeRect(box.x, box.y, box.width, box.height);
-
-    // Dibujar texto
     ctx.font = "16px Arial";
     ctx.fillStyle = color;
     ctx.fillText(label, box.x, box.y - 8);
 
-    // Mostrar en HTML
     const p = document.createElement("p");
     p.textContent = label;
     p.style.color = color;
@@ -89,11 +65,8 @@ function showResultsWithCanvas(recognized) {
   });
 }
 
-let lastSentId = null;
-
 async function identify() {
   const base64Image = getBase64Image();
-
   try {
     const response = await fetch("/identify", {
       method: "POST",
@@ -102,28 +75,18 @@ async function identify() {
     });
 
     const data = await response.json();
-
     if (data.success && Array.isArray(data.recognized)) {
-      if (data.recognized[0]?.box) {
-        showResultsWithCanvas(data.recognized);
-
-        // Extraer ID
-        const label = data.recognized[0].label;
-        if (label.startsWith("ID:")) {
-          const userId = label.replace("ID:", "").trim();
-
-          // Solo guardar si es distinto al último enviado
-          if (userId !== lastSentId) {
-            lastSentId = userId;
-            console.log(`Identificado usuario: ${userId}`);
-
-            // Enviar al backend para guardar
-            await fetch("/save-identification", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId }),
-            });
-          }
+      showResultsWithCanvas(data.recognized);
+      const label = data.recognized[0]?.label;
+      if (label?.startsWith("ID:")) {
+        const userId = label.replace("ID:", "").trim();
+        if (userId !== lastSentId) {
+          lastSentId = userId;
+          await fetch("/save-identification", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId }),
+          });
         }
       }
     } else {
@@ -135,36 +98,77 @@ async function identify() {
   }
 }
 
-// Iniciar identificación 
-intervalId = setInterval(identify, 2000);
-
-// Detener identificación
+// Detener reconocimiento y apagar cámara
 function stopIdentification() {
-  clearInterval(intervalId);
+  console.log("Ejecutando stopIdentification...");
+  if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
+    console.log("Intervalo detenido");
+  } else {
+    console.log("No hay intervalo activo");
+  }
+
   resultsDiv.innerText = "Identificación detenida.";
+  const ctx = overlay.getContext("2d");
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+  if (stream) {
+    stream.getTracks().forEach(track => {
+      track.stop();
+      console.log("Track detenido:", track);
+    });
+    stream = null;
+    video.srcObject = null;
+    console.log("Cámara apagada");
+  } else {
+    console.log("No hay stream activo");
+  }
 }
 
 
-document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const fileInput = document.getElementById("imageInput");
-  const file = fileInput.files[0];
-  if (!file) return;
 
-  const formData = new FormData();
-  formData.append("image", file);
+// Iniciar reconocimiento y encender cámara
+async function startIdentification() {
+  if (intervalId) return; // evitar duplicados
 
   try {
-    const res = await fetch("/upload-image", {
-      method: "POST",
-      body: formData,
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 640 }, height: { ideal: 480 } }
     });
+    video.srcObject = stream;
 
-    const blob = await res.blob();
-    const imageUrl = URL.createObjectURL(blob);
-    document.getElementById("resultImage").src = imageUrl;
+    intervalId = setInterval(identify, 2000);
+    resultsDiv.innerText = "Identificación en curso...";
   } catch (err) {
-    alert("Error subiendo imagen");
-    console.error(err);
+    console.error("Error al acceder a la cámara", err);
+    resultsDiv.innerText = "No se pudo acceder a la cámara.";
   }
+}
+
+// Eventos de botones
+startBtn.addEventListener("click", () => {
+  console.log("Botón iniciar presionado");
+  startIdentification();
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+});
+
+stopBtn.addEventListener("click", () => {
+  console.log("Botón detener presionado");
+  stopIdentification();
+  stopBtn.disabled = true;
+  startBtn.disabled = false;
+});startBtn.addEventListener("click", () => {
+  console.log("Botón iniciar presionado");
+  startIdentification();
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+});
+
+stopBtn.addEventListener("click", () => {
+  console.log("Botón detener presionado");
+  stopIdentification();
+  stopBtn.disabled = true;
+  startBtn.disabled = false;
 });
