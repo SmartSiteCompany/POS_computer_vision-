@@ -33,7 +33,7 @@ async function login() {
         alert(data.message);
         
         //Redirige a la pantalla de bienvenida
-        window.location.href = `/index.html?name=${encodeURIComponent(data.message)}`;
+        window.location.href = `/dashboard.html?name=${encodeURIComponent(data.message)}`;
       } else {
         alert(data.message || "Error en el login");
       }

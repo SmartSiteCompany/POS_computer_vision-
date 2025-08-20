@@ -1,53 +1,65 @@
+// Cargar variables de entorno
 const env = require("dotenv");
 env.config();
 
+// Dependencias
 const express = require("express");
-const app = express();
 const path = require("path");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const routes = require("./routes");
-const conectMongo = require('./models/mongo');
+const conectMongo = require("./models/mongo");
 
-const SESSION_SECRET = process.env.SESSION_SECRET;
-const MONGO_URI = process.env.MONGO_URI;
+// Inicializar app
+const app = express();
 
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "registerCajero.html"));
-});
-
+// Conectar a MongoDB
 conectMongo();
 
-app.use(express.static("public"));
+// Variables de entorno
+const SESSION_SECRET = process.env.SESSION_SECRET;
+const MONGO_URI = process.env.MONGO_URI;
+const PORT = process.env.PORT || 3000;
+
+// Verificar que las variables existen
+if (!SESSION_SECRET || !MONGO_URI) {
+  throw new Error("Faltan SESSION_SECRET o MONGO_URI en el archivo .env");
+}
+
+// Middleware base
 app.use(express.json({ limit: "10mb" }));
+app.use(express.static(path.join(__dirname, "public"))); // Servir HTML, JS, CSS, etc.
 
 // Configuración de sesión
 app.use(session({
-  name: 'ssc.sid',                   // opcional: nombre de cookie más claro
-  secret: SESSION_SECRET,            // viene del .env
+  name: "ssc.sid",
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: MONGO_URI,              // viene del .env
-    ttl: 60 * 15                      // TTL en segundos (15 minutos)
+    mongoUrl: MONGO_URI,
+    ttl: 60 * 15, // 15 minutos
   }),
   cookie: {
-    maxAge: 1000 * 60 * 15,           // 15 minutos en milisegundos
-    httpOnly: true,                   // no accesible por JS en el navegador
-    secure: process.env.NODE_ENV === 'production', // solo HTTPS en prod
-    sameSite: 'lax'
-  }
+    maxAge: 1000 * 60 * 15,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  },
 }));
 
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
+});
 
 app.use("/", routes);
 
-app.use(express.static(path.join(__dirname, "public"))); // Servir HTML, JS, etc.
-app.use(express.static(path.join(__dirname, "public")));
 
-
-const PORT = process.env.PORT || 3000;
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+

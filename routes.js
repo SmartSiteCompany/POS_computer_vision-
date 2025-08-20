@@ -129,12 +129,12 @@ router.post("/register", async (req, res) => {
 
       const descriptorArray = Array.from(descriptor);
 
-      // 🧠 GUARDAR EN MONGODB
+      // GUARDAR EN MONGODB
       const newUser = new User({ encoding: descriptorArray });
       const savedUser = await newUser.save();
       const userId = savedUser._id.toString();
 
-      // 🖼️ Guardar recorte de rostro (opcional)
+      // Guardar recorte de rostro
       const faceCanvas = createCanvas(width, height);
       const faceCtx = faceCanvas.getContext("2d");
       faceCtx.drawImage(canvasBase, x, y, width, height, 0, 0, width, height);
@@ -703,5 +703,11 @@ router.put("/cajeros/:id", async (req, res) => {
   }
 });
 
+router.get("/dashboard", (req, res) => {
+  if (!req.session.cajeroId) {
+    return res.redirect("/login.html");
+  }
+  res.sendFile(path.join(__dirname, "../public/dashboard.html"));
+});
 
 module.exports = router;
