@@ -11,6 +11,10 @@ cd POS_computer_vision-
 # Instalar las dependencias
 npm install
 
+# Crear carpeta en raíz con nombre "logs"
+
+# Crear carpeta en raíz con nombre "dataset"
+
 # Crear un archivo .env en raiz y colocar el siguiente contenido
 Estructura del archivo .env 
 
@@ -22,6 +26,6 @@ NODE_ENV=development
 
 # Crear la clave para la sesión
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))" 
-
+reemplazala en el apartado correspondiente al archivo.env
 # Ejecutar el proyecto
 node server.js
